@@ -464,12 +464,12 @@
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
         }
-
+/* 取消所有元素的滚动条 */
 ::-webkit-scrollbar {
     display: none; /* Chrome, Safari 和 Opera */
 }
 
-
+/* Firefox 则使用 */
 .no-scrollbar {
     scrollbar-width: none; /* Firefox */
 }
@@ -553,7 +553,7 @@
     100% { left: 100%; }
 }
 
-
+/* 添加点击动画 */
 .sci-fi-btn:active {
     transform: scale(0.45);
     transition: 0.1s;
@@ -561,8 +561,8 @@
 
 </style>
 
-<a href="https://freeai.aihub.ren" class="sci-fi-btn" style="text-decoration: none;">
-    
+<a href="https://freeai.azad.asia" class="sci-fi-btn" style="text-decoration: none;">
+    <!-- 添加流光边框 -->
     <span class="glowing-border"></span>
     <span class="glowing-border"></span>
     返回首页
@@ -851,7 +851,8 @@
                 }
             });
             
-           downloadBtn.addEventListener('click', function() {
+            // 下载图像
+            downloadBtn.addEventListener('click', function() {
     if (previewImage.src) {
         // 直接在新标签页打开图片
         window.open(previewImage.src, '_blank');
@@ -878,52 +879,67 @@
             }
             
             // 添加到历史记录
-            function addToHistory(imageUrl, details) {
-                // 隐藏空历史提示
-                emptyHistory.style.display = 'none';
-                
-                // 创建历史项
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                
-                historyItem.innerHTML = `
-                    <img src="${imageUrl}" alt="AI生成图像">
-                    <div class="history-item-info">
-                        <div class="history-item-prompt">${details.prompt}</div>
-                        <div class="history-item-model">${details.model}</div>
-                    </div>
-                `;
-                
-                // 点击历史项加载图像
-                historyItem.addEventListener('click', function() {
-                    previewImage.src = imageUrl;
-                    previewImage.style.display = 'block';
-                    placeholderText.style.display = 'none';
-                    imageInfo.style.display = 'block';
-                    imageActions.style.display = 'flex';
-                    imageDetails.textContent = JSON.stringify(details, null, 2);
-                    
-                    // 填充表单
-                    promptInput.value = details.prompt;
-                    modelSelect.value = details.model;
-                    modelInfo.textContent = modelDescriptions[details.model] || '';
-                    
-                    const dimensions = details.dimensions.split('x');
-                    widthInput.value = dimensions[0];
-                    heightInput.value = dimensions[1];
-                    seedInput.value = details.seed;
-                    
-                    if (details.negative_prompt && details.negative_prompt !== '无') {
-                        negativePromptInput.value = details.negative_prompt;
-                    }
-                });
-                
-                               // 添加到容器
-                historyContainer.insertBefore(historyItem, historyContainer.firstChild);
-                
-                // 保存到本地存储
-                saveHistory();
-            }
+            // Replace the addToHistory function with this updated version
+function addToHistory(imageUrl, details) {
+    // Check if this image URL already exists in history to prevent duplicates
+    const existingItems = historyContainer.querySelectorAll('.history-item');
+    for (let i = 0; i < existingItems.length; i++) {
+        const img = existingItems[i].querySelector('img');
+        if (img.src === imageUrl) {
+            // Move this item to the top instead of creating a duplicate
+            historyContainer.insertBefore(existingItems[i], historyContainer.firstChild);
+            saveHistory();
+            return; // Exit the function early - no need to create a new item
+        }
+    }
+    
+    // If we reach here, this is a new item to add
+    
+    // Hide empty history prompt
+    emptyHistory.style.display = 'none';
+    
+    // Create history item
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    
+    historyItem.innerHTML = `
+        <img src="${imageUrl}" alt="AI生成图像">
+        <div class="history-item-info">
+            <div class="history-item-prompt">${details.prompt}</div>
+            <div class="history-item-model">${details.model}</div>
+        </div>
+    `;
+    
+    // Click handler for history item
+    historyItem.addEventListener('click', function() {
+        previewImage.src = imageUrl;
+        previewImage.style.display = 'block';
+        placeholderText.style.display = 'none';
+        imageInfo.style.display = 'block';
+        imageActions.style.display = 'flex';
+        imageDetails.textContent = JSON.stringify(details, null, 2);
+        
+        // Fill form
+        promptInput.value = details.prompt;
+        modelSelect.value = details.model;
+        modelInfo.textContent = modelDescriptions[details.model] || '';
+        
+        const dimensions = details.dimensions.split('x');
+        widthInput.value = dimensions[0];
+        heightInput.value = dimensions[1];
+        seedInput.value = details.seed;
+        
+        if (details.negative_prompt && details.negative_prompt !== '无') {
+            negativePromptInput.value = details.negative_prompt;
+        }
+    });
+    
+    // Add to container at the top
+    historyContainer.insertBefore(historyItem, historyContainer.firstChild);
+    
+    // Save to local storage
+    saveHistory();
+}
             
             // 保存历史记录到本地存储
             function saveHistory() {
