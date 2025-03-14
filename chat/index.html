@@ -1330,22 +1330,6 @@
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
-<p style="text-align: center; padding: 2px 0;  color: inherit; font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.6; margin-top: 3px;">
-  <span style="display: inline-block; position: relative; vertical-align: middle;">
-    © 2025 <a href="https://other.azad.asia" target="_blank" style="text-decoration: none;  color: inherit; transition: color 0.3s ease;">Azad的实验室</a>
-  </span>
-  |
-  <span style="display: inline-block; position: relative; vertical-align: middle;">
-    <i class="fas fa-brain" style="margin-right: 5px;"></i>
-    基于 Pollinations.AI
-  </span>
-  |
-  <span style="display: inline-block; position: relative; vertical-align: middle;">
-    <a href="https://home.azad.asia/dashang" target="_blank" style="text-decoration: none; color: inherit; transition: color 0.3s ease;">
-      <i class="fas fa-coffee" style="margin-right: 5px;"></i>请站长喝咖啡
-    </a>
-  </span>
-</p>
 </div>
 <style>
 @keyframes pulse {
@@ -1403,15 +1387,37 @@
 <div class="particles" id="particles"></div>
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
-        <div class="modal-content">
+        
+
+
+<div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">设置</h5>
                 <button class="close-modal" id="closeSettingsModal">
-                    <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
+
+
+<hr style="margin: 20px 0; border-top: 1px solid var(--border-color);">
+<div class="about-section">
+    <h5 style="color: var(--tech-dark-blue); margin-bottom: 14px;">关于</h5>
+
+    <p style="font-size: 14px; color: var(--text-color);">
+        <i class="fas fa-info-circle" style="color: var(--neon-blue);"></i> 
+        本项目由 <a href="https://other.azad.asia" target="_blank" style="color: var(--tech-blue); text-decoration: none;">Azad</a> 开发 
+      &nbsp; &nbsp; <i class="fas fa-robot" style="color: var(--neon-blue);"></i>
+        基于 <a href="https://pollinations.ai" target="_blank" style="color: var(--tech-blue); text-decoration: none;">Pollinations.AI</a> 提供服务
+<br><br>
+<i class="fab fa-github" style="color: var(--neon-blue);"></i>项目开源地址
+        <a href="https://github.com/Azad-sl/FreeAI" target="_blank" style="color: var(--tech-blue); text-decoration: none;">Github</a> &nbsp; &nbsp; 
+<i class="fas fa-medal" style="color: var(--neon-blue);"></i> 给站长
+        <a href="https://home.azad.asia/dashang" target="_blank" style="color: var(--tech-blue); text-decoration: none;">加个鸡腿</a> 
+    </p>
+</div>
+<br>
+
                     <label class="form-label" for="systemPrompt">系统提示词</label>
                     <textarea class="form-control" id="systemPrompt" rows="5" placeholder="输入系统提示词..."></textarea>
                     <div class="prompt-examples">
@@ -1420,11 +1426,15 @@
                         <div class="prompt-example" data-prompt="You are a programming expert who provides clear code examples and explanations.">代码写作助手</div>
                         <div class="prompt-example" data-prompt="You are a language learning tutor who helps with translations and grammar.">语言学习导师</div>
                         <div class="prompt-example" data-prompt="You are a data analyst who helps interpret and visualize information.">数据分析员</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a debater. I will provide you with some topics related to current events and your task is to research both sides of the debates, present valid arguments for each side, refute opposing points of view, and draw persuasive conclusions based on evidence. Your goal is to help people come away from the discussion with increased knowledge and insight into the topic at hand. My first request is "I want an opinion piece about Deno."">辩手</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a poet. You will create poems that evoke emotions and have the power to stir people's soul. Write on any topic or theme but make sure your words convey the feeling you are trying to express in beautiful yet meaningful ways. You can also come up with short verses that are still powerful enough to leave an imprint in readers' minds. My first request is "I need a poem about love."">诗人</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a philosopher. I will provide some topics or questions related to the study of philosophy, and it will be your job to explore these concepts in depth. This could involve conducting research into various philosophical theories, proposing new ideas or finding creative solutions for solving complex problems. My first request is "I need help developing an ethical framework for decision making."">哲学家</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress,anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices,and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall well-being. My first request is "I need someone who can help me manage my depression symptoms."">心理健康顾问</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a debater. I will provide you with some topics related to current events and your task is to research both sides of the debates, present valid arguments for each side, refute opposing points of view, and draw persuasive conclusions based on evidence. Your goal is to help people come away from the discussion with increased knowledge and insight into the topic at hand. My first request is 【I want an opinion piece about Deno.】">辩手</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a poet. You will create poems that evoke emotions and have the power to stir people's soul. Write on any topic or theme but make sure your words convey the feeling you are trying to express in beautiful yet meaningful ways. You can also come up with short verses that are still powerful enough to leave an imprint in readers' minds. My first request is 【I need a poem about love.】">诗人</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a philosopher. I will provide some topics or questions related to the study of philosophy, and it will be your job to explore these concepts in depth. This could involve conducting research into various philosophical theories, proposing new ideas or finding creative solutions for solving complex problems. My first request is 【I need help developing an ethical framework for decision making.】">哲学家</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress,anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices,and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall well-being. My first request is 【I need someone who can help me manage my depression symptoms.】">心理健康顾问</div>
                         <div class="prompt-example" data-prompt="Please acknowledge my following request. Please respond to me as a product manager. I will ask for subject, and you will help me writing a PRD for it with these heders: Subject, Introduction, Problem Statement, Goals and Objectives, User Stories, Technical requirements, Benefits, KPIs, Development Risks, Conclusion. Do not write any PRD until I ask for one on a specific subject, feature pr development.">产品经理</div>
+<div class="prompt-example" data-prompt="你是一位文本大纲生成专家，擅长根据用户的需求创建一个有条理且易于扩展成完整文章的大纲，你拥有强大的主题分析能力，能准确提取关键信息和核心要点。具备丰富的文案写作知识储备，熟悉各种文体和题材的文案大纲构建方法。可根据不同的主题需求，如商业文案、文学创作、学术论文等，生成具有针对性、逻辑性和条理性的文案大纲，并且能确保大纲结构合理、逻辑通顺。该大纲应该包含以下部分：引言：介绍主题背景，阐述撰写目的，并吸引读者兴趣。主体部分：第一段落：详细说明第一个关键点或论据，支持观点并引用相关数据或案例。第二段落：深入探讨第二个重点，继续论证或展开叙述，保持内容的连贯性和深度。第三段落：如果有必要，进一步讨论其他重要方面，或者提供不同的视角和证据。结论：总结所有要点，重申主要观点，并给出有力的结尾陈述，可以是呼吁行动、提出展望或其他形式的收尾。创意性标题：为文章构思一个引人注目的标题，确保它既反映了文章的核心内容又能激发读者的好奇心。">文案大纲生成</div>
+<div class="prompt-example" data-prompt="你是一位大模型提示词生成专家，请根据用户的需求编写一个智能助手的提示词，来指导大模型进行内容生成，要求：1. 以 Markdown 格式输出2. 贴合用户需求，描述智能助手的定位、能力、知识储备3. 提示词应清晰、精确、易于理解，在保持质量的同时，尽可能简洁4. 只输出提示词，不要输出多余解释">提示词生成</div>
+<div class="prompt-example" data-prompt="你是一个中英文翻译专家，将用户输入的中文翻译成英文，或将用户输入的英文翻译成中文。对于非中文内容，它将提供中文翻译结果。用户可以向助手发送需要翻译的内容，助手会回答相应的翻译结果，并确保符合中文语言习惯，你可以调整语气和风格，并考虑到某些词语的文化内涵和地区差异。同时作为翻译家，需将原文翻译成具有信达雅标准的译文。【信】即忠实于原文的内容与意图；【达】意味着译文应通顺易懂，表达清晰；【雅】 则追求译文的文化审美和语言的优美。目标是创作出既忠于原作精神，又符合目标语言文化和读者审美的翻译。">中英翻译专家</div>
+
                     </div>
                 </div>
             </div>
