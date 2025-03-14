@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeAI - 基于 Pollinations.AI </title>
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #01c8ee;
+            --neon-purple: #ae5ff8;
+            --neon-green: #05ffa1;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --accent-color: #ff2a6d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(1, 200, 238, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(174, 95, 248, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 15% 70%, rgba(255, 42, 109, 0.1) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+        
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "Free AI";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: none;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 
+                0 0 5px var(--neon-blue),
+                0 0 10px var(--neon-pink),
+                0 0 15px var(--neon-purple),
+                0 0 20px var(--neon-green);
+            animation: flicker 4s infinite alternate;
+            opacity: 0.7;
+        }
+        
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+                opacity: 0.9;
+                text-shadow: 
+                    0 0 5px var(--neon-blue),
+                    0 0 10px var(--neon-pink),
+                    0 0 15px var(--neon-purple),
+                    0 0 20px var(--neon-green);
+            }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+                opacity: 0.4;
+                text-shadow: none;
+            }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: var(--darker-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(1, 200, 238, 0.15);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 0 20px rgba(1, 200, 238, 0.3),
+                0 0 40px rgba(174, 95, 248, 0.2);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+        }
+        
+        .card:nth-child(1)::before {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+        }
+        
+        .card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+        }
+        
+        .card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-green));
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .card:nth-child(1) .card-icon {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .card:nth-child(2) .card-icon {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+        
+        .card:nth-child(3) .card-icon {
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+        
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: none;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            text-decoration: none;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--accent-color);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            color: #000;
+        }
+        
+        .btn:hover::before {
+            width: 100%;
+        }
+        
+        .card:nth-child(1) .btn {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+        
+        .card:nth-child(1) .btn::before {
+            background: var(--neon-blue);
+        }
+        
+        .card:nth-child(2) .btn {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        
+        .card:nth-child(2) .btn::before {
+            background: var(--neon-pink);
+        }
+        
+        .card:nth-child(3) .btn {
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+        
+        .card:nth-child(3) .btn::before {
+            background: var(--neon-purple);
+        }
+        
+        .code-lines {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: 0;
+            background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        }
+        
+        .circuit-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .circuit-line {
+            position: absolute;
+            background: rgba(1, 200, 238, 0.1);
+            overflow: hidden;
+        }
+        
+        .circuit-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(1, 200, 238, 0.5), transparent);
+            animation: circuitPulse 3s infinite linear;
+        }
+        
+        @keyframes circuitPulse {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 200%;
+            }
+        }
+        
+        .circuit-line:nth-child(1) {
+            width: 3px;
+            height: 40%;
+            top: 0;
+            left: 10%;
+        }
+        
+        .circuit-line:nth-child(2) {
+            width: 2px;
+            height: 30%;
+            top: 50%;
+            left: 20%;
+        }
+        
+        .circuit-line:nth-child(3) {
+            width: 60%;
+            height: 2px;
+            top: 30%;
+            left: 30%;
+        }
+        
+        .circuit-line:nth-child(4) {
+            width: 3px;
+            height: 35%;
+            top: 40%;
+            left: 80%;
+        }
+        
+        .circuit-line:nth-child(5) {
+            width: 40%;
+            height: 3px;
+            top: 85%;
+            left: 10%;
+        }
+        
+        .circuit-line:nth-child(6) {
+            width: 2px;
+            height: 20%;
+            top: 10%;
+            left: 60%;
+        }
+        
+        .circuit-line:nth-child(7) {
+            width: 50%;
+            height: 2px;
+            top: 60%;
+            left: 40%;
+        }
+        
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .glitch span {
+            position: absolute;
+            background: rgba(255, 42, 109, 0.5);
+            width: 100%;
+            height: 5px;
+            animation: glitchEffect 4s infinite;
+            opacity: 0;
+        }
+        
+        .glitch span:nth-child(1) {
+            top: 30%;
+            animation-delay: 0s;
+        }
+        
+        .glitch span:nth-child(2) {
+            top: 50%;
+            animation-delay: 1s;
+        }
+        
+        .glitch span:nth-child(3) {
+            top: 70%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes glitchEffect {
+            0% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            0.5%, 1.5% {
+                opacity: 0.5;
+                transform: translateX(0);
+            }
+            2% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+        
+        .digital-clock {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: var(--neon-green);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 1px solid rgba(5, 255, 161, 0.3);
+            text-shadow: 0 0 5px var(--neon-green);
+            letter-spacing: 2px;
+        }
+        
+        footer {
+            margin-top: 6rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .digital-clock {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 1rem auto;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="code-lines"></div>
+    
+    <div class="circuit-lines">
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+    </div>
+    
+    <div class="glitch">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <div class="container">
+        <div class="digital-clock" id="clock">00:00:00</div>
+        
+        <header>
+            <h1>Free AI</h1>
+            <p class="subtitle">探索未来 · 释放创造力</p>
+        </header>
+        
+        <div class="grid">
+            <div class="card">
+                <span class="card-icon">💬</span>
+                <h2>AI智能对话</h2>
+                <p>强大的AI聊天助手，可以回答问题、提供创意建议、编写文本，甚至帮你解决复杂问题。完全免费，无限制使用。</p>
+                <a href="https://freeai.aihub.ren/chat" class="btn">开始对话</a>
+            </div>
+            
+            <div class="card">
+                <span class="card-icon">🎨</span>
+                <h2>AI图像生成</h2>
+                <p>将你的想法转化为视觉艺术。只需输入文本描述，AI将为你创造令人惊叹的图像。支持多种风格和高分辨率导出。</p>
+                <a href="https://freeai.aihub.ren/draw" class="btn">生成图像</a>
+            </div>
+            
+            <div class="card">
+                <span class="card-icon">🔊</span>
+                <h2>AI语音合成</h2>
+                <p>将文本转换为逼真的语音。支持多种语言和声音风格，适用于创作内容、教育材料或个人使用。</p>
+                <a href="https://freeai.aihub.ren/tts" class="btn">转换语音</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 Free AI | 基于 Pollinations.AI | <a href="https://other.azad.asia" target="_blank" style="text-decoration: none; color: inherit;">Azad的实验室</a></p>
+        </footer>
+    </div>
+    
+    <script>
+        // 更新数字时钟
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // 添加动态电路效果
+        function addCircuitEffects() {
+            const lines = document.querySelectorAll('.circuit-line');
+            lines.forEach(line => {
+                const delay = Math.random() * 10;
+                const duration = 3 + Math.random() * 7;
+                line.style.animationDelay = `${delay}s`;
+                line.style.animationDuration = `${duration}s`;
+            });
+        }
+        
+        addCircuitEffects();
+        
+        // 添加鼠标跟随效果
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                
+                const distanceX = (e.clientX - cardCenterX) / 30;
+                const distanceY = (e.clientY - cardCenterY) / 30;
+                
+                // 限制倾斜角度
+                const tiltX = Math.max(Math.min(distanceY, 5), -5);
+                const tiltY = Math.max(Math.min(-distanceX, 5), -5);
+                
+                if (Math.abs(distanceX) < 100 && Math.abs(distanceY) < 100) {
+                    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-5px)`;
+                } else {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                }
+            });
+            
+            // 背景光效跟随
+            document.body.style.backgroundImage = `
+                radial-gradient(circle at ${mouseX * 100}% ${mouseY * 100}%, rgba(1, 200, 238, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at ${85 - mouseX * 30}% ${30 + mouseY * 40}%, rgba(174, 95, 248, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at ${15 + mouseX * 30}% ${70 - mouseY * 40}%, rgba(255, 42, 109, 0.1) 0%, transparent 40%)
+            `;
+        });
+        
+        // 随机生成故障效果
+        function randomGlitch() {
+            const glitchElements = document.querySelectorAll('.glitch span');
+            const randomIndex = Math.floor(Math.random() * glitchElements.length);
+            const randomElement = glitchElements[randomIndex];
+            
+            randomElement.style.opacity = '0.5';
+            randomElement.style.transform = 'translateX(0)';
+            
+            setTimeout(() => {
+                randomElement.style.opacity = '0';
+                randomElement.style.transform = 'translateX(100%)';
+            }, 100);
+            
+            setTimeout(randomGlitch, 3000 + Math.random() * 5000);
+        }
+        
+        setTimeout(randomGlitch, 2000);
+    </script>
+</body>
+</html>
