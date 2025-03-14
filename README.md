@@ -1,2 +1,2 @@
-# FreeAI---Pollinations.AI-
+# FreeAI
 FreeAI - 基于 Pollinations.AI 
