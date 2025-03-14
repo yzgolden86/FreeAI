@@ -1,5 +1,5 @@
 # FreeAI
-FreeAI - 基于 ![Pollinations.AI](https://pollinations.ai/) API的AI应用平台，实现免费且无限制的AI聊天助手、图像生成和语音合成服务。
+FreeAI - 基于 [Pollinations.AI](https://pollinations.ai/) API的AI应用平台，实现免费且无限制的AI聊天助手、图像生成和语音合成服务。
 
 🔑 关键要点：
 1. 提供免费的AI聊天助手，支持问题回答、创意建议和文本编写。
@@ -8,4 +8,4 @@ FreeAI - 基于 ![Pollinations.AI](https://pollinations.ai/) API的AI应用平�
 4. 无限制使用，完全免费。
 
 觉得好用可以请我喝杯咖啡❤
-<img src="https://s21.ax1x.com/2025/03/14/pEae92Q.png" alt="pEae92Q.png" style="zoom: 33%;" />
+<img src="https://s21.ax1x.com/2025/03/14/pEae92Q.png" alt="pEae92Q.png" style="zoom: 12%;" />
