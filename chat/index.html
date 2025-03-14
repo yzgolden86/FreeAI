@@ -767,6 +767,38 @@
             <i class="fas fa-plus"></i>
             <span>新建会话</span>
         </button>
+
+        <style>
+ .sci-fi-btn {
+            margin: 1px 15px 15px 15px;
+            padding: 4px;
+            background-color: var(--tech-blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .sci-fi-btn:hover {
+            background-color: var(--tech-dark-blue);
+            transform: translateY(-1px);
+        }
+        .sci-fi-btn:active {
+            transform: translateY(0);
+        }
+
+</style>
+
+<a href="https://freeai.aihub.ren" class="sci-fi-btn" style="text-decoration: none;">
+    <span class="glowing-border"></span>
+    <span class="glowing-border"></span>
+    返回首页
+</a>
+
         <div class="chat-list" id="chatList">
             <!-- Chat history items will be dynamically added here -->
         </div>
