@@ -8,4 +8,4 @@ FreeAI - 基于 ![Pollinations.AI](https://pollinations.ai/) API的AI应用平�
 4. 无限制使用，完全免费。
 
 觉得好用可以请我喝杯咖啡❤
-[![pEae92Q.png](https://s21.ax1x.com/2025/03/14/pEae92Q.png)](https://imgse.com/i/pEae92Q)
+[<img src="https://s21.ax1x.com/2025/03/14/pEae92Q.png" alt="pEae92Q.png" style="zoom: 33%;" />](https://imgse.com/i/pEae92Q)
