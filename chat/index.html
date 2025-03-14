@@ -8,32 +8,36 @@
     <style>
         /* Variables */
         :root {
-            --primary-color: #07C160;
+            --primary-color: #0099ff;
             --secondary-color: #F5F5F5;
             --text-color: #333;
             --light-text: #666;
             --bg-color: #EDEDED;
             --white: #fff;
             --border-color: #ddd;
-            --user-msg-color: #95ec69;
+            --user-msg-color: #e1f5fe;
             --ai-msg-color: var(--white);
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --wechat-green: #07C160;
-            --border-radius: 10px;
+            --shadow: 0 2px 10px rgba(0, 153, 255, 0.15);
+            --wechat-green: #0099ff;
+            --border-radius: 8px;
             --chat-font-size: 14px; /* Default font size for chat */
+            --tech-blue: #0099ff;
+            --tech-dark-blue: #006bb3;
+            --tech-light-blue: #e1f5fe;
+            --tech-grey: #f0f0f0;
         }
         /* Dark theme */
         [data-theme="dark"] {
-            --primary-color: #07C160;
+            --primary-color: #0099ff;
             --secondary-color: #2A2A2A;
             --text-color: #E0E0E0;
             --light-text: #BBBBBB;
             --bg-color: #1A1A1A;
             --white: #2A2A2A;
             --border-color: #444;
-            --user-msg-color: #136F30;
+            --user-msg-color: #004d80;
             --ai-msg-color: #3A3A3A;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --shadow: 0 2px 10px rgba(0, 153, 255, 0.3);
         }
         /* Base styles */
         * {
@@ -48,6 +52,8 @@
             height: 100vh;
             display: flex;
             overflow: hidden;
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 25px 25px;
         }
         /* Hide scrollbars but keep scrolling functionality */
         .chat-list, .chat-area, .dropdown-menu, .message-input {
@@ -74,6 +80,7 @@
             top: 0;
             bottom: 0;
             z-index: 10;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
         }
         .sidebar.hidden {
             transform: translateX(-100%);
@@ -85,10 +92,12 @@
             justify-content: space-between;
             align-items: center;
             background-color: var(--secondary-color);
+            position: relative;
         }
         .sidebar-title {
             font-size: 18px;
             font-weight: bold;
+            letter-spacing: 0.5px;
         }
         .theme-toggle {
             background: none;
@@ -97,6 +106,10 @@
             cursor: pointer;
             font-size: 14px;
             margin-right: 8px;
+            transition: color 0.3s ease;
+        }
+        .theme-toggle:hover {
+            color: var(--tech-blue);
         }
         .clear-all-btn {
             color: var(--light-text);
@@ -104,6 +117,10 @@
             background: none;
             border: none;
             font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .clear-all-btn:hover {
+            color: var(--tech-blue);
         }
         .search-container {
             padding: 15px 15px 5px 15px;
@@ -116,6 +133,12 @@
             border-radius: var(--border-radius);
             background-color: var(--secondary-color);
             color: var(--text-color);
+            transition: border-color 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--tech-blue);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.1);
         }
         .search-icon {
             position: absolute;
@@ -128,7 +151,7 @@
         .new-chat-btn {
             margin: 5px 15px 15px 15px;
             padding: 10px;
-            background-color: var(--wechat-green);
+            background-color: var(--tech-blue);
             color: var(--white);
             border: none;
             border-radius: var(--border-radius);
@@ -138,6 +161,14 @@
             justify-content: center;
             gap: 8px;
             font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .new-chat-btn:hover {
+            background-color: var(--tech-dark-blue);
+            transform: translateY(-1px);
+        }
+        .new-chat-btn:active {
+            transform: translateY(0);
         }
         .chat-list {
             flex: 1;
@@ -152,12 +183,13 @@
             display: flex;
             align-items: center;
             position: relative;
+            transition: background-color 0.3s ease;
         }
         .chat-item:hover {
             background-color: var(--secondary-color);
         }
         .chat-item.active {
-            background-color: var(--secondary-color);
+            background-color: var(--tech-light-blue);
         }
         .chat-item-icon {
             margin-right: 12px;
@@ -167,8 +199,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--secondary-color);
+            background-color: var(--tech-grey);
             color: var(--text-color);
+            overflow: hidden;
         }
         .chat-item-icon img {
             width: 100%;
@@ -192,6 +225,7 @@
             visibility: hidden;
             padding: 4px;
             font-size: 12px;
+            transition: color 0.3s ease;
         }
         .chat-item:hover .chat-item-pin,
         .chat-item:hover .chat-item-delete {
@@ -199,7 +233,13 @@
         }
         .chat-item-pin.pinned {
             visibility: visible;
-            color: var(--wechat-green);
+            color: var(--tech-blue);
+        }
+        .chat-item-pin:hover {
+            color: var(--tech-blue);
+        }
+        .chat-item-delete:hover {
+            color: #f44336;
         }
         /* Main content */
         .main-content {
@@ -223,6 +263,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
+            z-index: 5;
         }
         .model-selection {
             flex: 1;
@@ -238,6 +279,10 @@
             font-size: 16px;
             color: var(--light-text);
             margin-right: 10px;
+            transition: color 0.3s ease;
+        }
+        .sidebar-toggle-btn:hover {
+            color: var(--tech-blue);
         }
         .dropdown {
             position: relative;
@@ -253,6 +298,11 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dropdown-toggle:hover {
+            border-color: var(--tech-blue);
+            box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.1);
         }
         .dropdown-menu {
             position: absolute;
@@ -275,16 +325,18 @@
         .dropdown-group {
             padding: 5px 10px;
             font-weight: bold;
-            color: var(--light-text);
+            color: var(--tech-blue);
             border-bottom: 1px solid var(--border-color);
             margin-top: 5px;
+            font-size: 0.85em;
         }
         .dropdown-item {
             padding: 8px 15px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         .dropdown-item:hover {
-            background-color: var(--secondary-color);
+            background-color: var(--tech-light-blue);
         }
         .settings-btn, .font-size-btn {
             background: none;
@@ -293,6 +345,10 @@
             font-size: 16px;
             color: var(--light-text);
             margin-left: 10px;
+            transition: color 0.3s ease;
+        }
+        .settings-btn:hover, .font-size-btn:hover {
+            color: var(--tech-blue);
         }
         .font-size-controls {
             display: flex;
@@ -310,6 +366,7 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(2px);
         }
         .modal.show {
             display: flex;
@@ -321,6 +378,7 @@
             width: 500px;
             max-width: 90%;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
         }
         .modal-header {
             display: flex;
@@ -331,6 +389,7 @@
         .modal-title {
             font-size: 18px;
             font-weight: bold;
+            color: var(--tech-blue);
         }
         .close-modal {
             background: none;
@@ -338,6 +397,10 @@
             cursor: pointer;
             font-size: 14px;
             color: var(--light-text);
+            transition: color 0.3s ease;
+        }
+        .close-modal:hover {
+            color: var(--tech-blue);
         }
         .modal-body {
             margin-bottom: 15px;
@@ -349,6 +412,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: var(--tech-dark-blue);
         }
         .form-control {
             width: 100%;
@@ -358,6 +422,12 @@
             resize: vertical;
             background-color: var(--white);
             color: var(--text-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--tech-blue);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.1);
         }
         .prompt-examples {
             margin-top: 10px;
@@ -368,14 +438,15 @@
         .prompt-example {
             font-size: 12px;
             padding: 5px 10px;
-            background-color: var(--secondary-color);
+            background-color: var(--tech-grey);
             border-radius: var(--border-radius);
             cursor: pointer;
             border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .prompt-example:hover {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: var(--tech-light-blue);
+            border-color: var(--tech-blue);
         }
         .modal-footer {
             display: flex;
@@ -387,14 +458,29 @@
             border-radius: var(--border-radius);
             cursor: pointer;
             border: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(0);
         }
         .btn-secondary {
             background-color: var(--secondary-color);
             color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--tech-grey);
         }
         .btn-primary {
-            background-color: var(--wechat-green);
+            background-color: var(--tech-blue);
             color: var(--white);
+        }
+        .btn-primary:hover {
+            background-color: var(--tech-dark-blue);
         }
         /* Chat area */
         .chat-area {
@@ -425,63 +511,42 @@
         .message-avatar {
             width: 36px;
             height: 36px;
-            border-radius: 4px; /* More like WeChat style */
+            border-radius: 6px;
             margin: 0 12px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .message-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        /* Updated chat bubble style to match WeChat */
+        /* Updated chat bubble style */
         .message-bubble {
             max-width: 70%;
             padding: 10px 15px;
-            border-radius: 4px; /* WeChat uses smaller radius */
+            border-radius: 12px;
             position: relative;
             font-size: var(--chat-font-size);
-            box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1); /* Subtle shadow like WeChat */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
         .message-user .message-bubble {
             background-color: var(--user-msg-color);
-            border-top-right-radius: 0; /* WeChat style speech bubble */
-        }
-        .message-user .message-bubble:after {
-            content: '';
-            position: absolute;
-            right: -6px; /* WeChat has smaller arrow */
-            top: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 6px 0 0 6px;
-            border-color: transparent transparent transparent var(--user-msg-color);
+            border-top-right-radius: 0;
         }
         .message-ai .message-bubble {
             background-color: var(--ai-msg-color);
-            border-top-left-radius: 0; /* WeChat style speech bubble */
-        }
-        .message-ai .message-bubble:after {
-            content: '';
-            position: absolute;
-            left: -6px; /* WeChat has smaller arrow */
-            top: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 0 0 6px 6px;
-            border-color: transparent transparent var(--ai-msg-color) transparent;
+            border-top-left-radius: 0;
         }
         .message-text {
             word-wrap: break-word;
             white-space: pre-wrap;
         }
         .message-text code {
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             background-color: rgba(0, 0, 0, 0.05);
             padding: 2px 4px;
             border-radius: 3px;
@@ -493,27 +558,33 @@
             overflow-x: auto;
             margin: 5px 0;
             position: relative;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             white-space: pre-wrap;
             word-break: break-all;
+            border-left: 3px solid var(--tech-blue);
         }
         .code-preview-btn {
             display: inline-block;
             margin-top: 5px;
             padding: 5px 10px;
-            background-color: var(--secondary-color);
+            background-color: var(--tech-grey);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             cursor: pointer;
             font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+        .code-preview-btn:hover {
+            background-color: var(--tech-light-blue);
         }
         .code-preview {
             display: none;
             margin-top: 10px;
             padding: 10px;
-            background-color: var(--secondary-color);
+            background-color: var(--white);
             border-radius: var(--border-radius);
             overflow: auto;
+            border: 1px solid var(--border-color);
         }
         .code-preview iframe {
             width: 100%;
@@ -534,9 +605,10 @@
             font-size: 12px;
             color: var(--light-text);
             cursor: pointer;
+            transition: color 0.3s ease;
         }
         .message-copy:hover {
-            text-decoration: underline;
+            color: var(--tech-blue);
         }
         .message-model {
             font-style: italic;
@@ -556,7 +628,7 @@
         .typing-indicator .dot {
             width: 8px;
             height: 8px;
-            background-color: var(--light-text);
+            background-color: var(--tech-blue);
             border-radius: 50%;
             animation: typing-dot 1.4s infinite ease-in-out;
         }
@@ -593,13 +665,15 @@
             overflow-y: auto;
             background-color: var(--white);
             color: var(--text-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .message-input:focus {
             outline: none;
-            border-color: var(--wechat-green);
+            border-color: var(--tech-blue);
+            box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.1);
         }
         .send-btn {
-            background-color: var(--wechat-green);
+            background-color: var(--tech-blue);
             color: var(--white);
             border: none;
             border-radius: var(--border-radius);
@@ -609,6 +683,14 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .send-btn:hover {
+            background-color: var(--tech-dark-blue);
+            transform: translateY(-1px);
+        }
+        .send-btn:active {
+            transform: translateY(0);
         }
         .action-buttons {
             display: flex;
@@ -626,10 +708,11 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
+            transition: color 0.3s ease, background-color 0.3s ease;
         }
         .clear-btn:hover, .export-btn:hover {
-            color: var(--wechat-green);
-            background-color: var(--secondary-color);
+            color: var(--tech-blue);
+            background-color: var(--tech-light-blue);
         }
         /* Responsive */
         @media (max-width: 768px) {
@@ -666,7 +749,7 @@
     <!-- Sidebar for conversations -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-title"><a href="https://freeai.aihub.ren" target="_blank" style="text-decoration: none; color: inherit;"><span style="color:#2e67d3"><b>FreeAI</b></span></a>- 基于 Pollinations.AI </div>
+            <div class="sidebar-title"><a href="https://freeai.aihub.ren" style="text-decoration: none; color: inherit;"><span style="color:#0099ff"><b>FreeAI</b></span></a>- 基于 Pollinations.AI </div>
             <div style="display: flex; align-items: center;">
                 <button class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
@@ -755,10 +838,10 @@
                         <div class="prompt-example" data-prompt="You are a programming expert who provides clear code examples and explanations.">代码写作助手</div>
                         <div class="prompt-example" data-prompt="You are a language learning tutor who helps with translations and grammar.">语言学习导师</div>
                         <div class="prompt-example" data-prompt="You are a data analyst who helps interpret and visualize information.">数据分析员</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a debater. I will provide you with some topics related to current events and your task is to research both sides of the debates, present valid arguments for each side, refute opposing points of view, and draw persuasive conclusions based on evidence. Your goal is to help people come away from the discussion with increased knowledge and insight into the topic at hand. My first request is “I want an opinion piece about Deno.”">辩手</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a poet. You will create poems that evoke emotions and have the power to stir people’s soul. Write on any topic or theme but make sure your words convey the feeling you are trying to express in beautiful yet meaningful ways. You can also come up with short verses that are still powerful enough to leave an imprint in readers’ minds. My first request is “I need a poem about love.”">诗人</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a philosopher. I will provide some topics or questions related to the study of philosophy, and it will be your job to explore these concepts in depth. This could involve conducting research into various philosophical theories, proposing new ideas or finding creative solutions for solving complex problems. My first request is “I need help developing an ethical framework for decision making.”">哲学家</div>
-                        <div class="prompt-example" data-prompt="I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress,anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices,and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall well-being. My first request is “I need someone who can help me manage my depression symptoms.”">心理健康顾问</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a debater. I will provide you with some topics related to current events and your task is to research both sides of the debates, present valid arguments for each side, refute opposing points of view, and draw persuasive conclusions based on evidence. Your goal is to help people come away from the discussion with increased knowledge and insight into the topic at hand. My first request is "I want an opinion piece about Deno."">辩手</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a poet. You will create poems that evoke emotions and have the power to stir people's soul. Write on any topic or theme but make sure your words convey the feeling you are trying to express in beautiful yet meaningful ways. You can also come up with short verses that are still powerful enough to leave an imprint in readers' minds. My first request is "I need a poem about love."">诗人</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a philosopher. I will provide some topics or questions related to the study of philosophy, and it will be your job to explore these concepts in depth. This could involve conducting research into various philosophical theories, proposing new ideas or finding creative solutions for solving complex problems. My first request is "I need help developing an ethical framework for decision making."">哲学家</div>
+                        <div class="prompt-example" data-prompt="I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress,anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices,and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall well-being. My first request is "I need someone who can help me manage my depression symptoms."">心理健康顾问</div>
                         <div class="prompt-example" data-prompt="Please acknowledge my following request. Please respond to me as a product manager. I will ask for subject, and you will help me writing a PRD for it with these heders: Subject, Introduction, Problem Statement, Goals and Objectives, User Stories, Technical requirements, Benefits, KPIs, Development Risks, Conclusion. Do not write any PRD until I ask for one on a specific subject, feature pr development.">产品经理</div>
                     </div>
                 </div>
@@ -926,7 +1009,7 @@
             </svg>`;
         }
         // AI avatar using the provided SVG
-        const aiAvatar = `<svg t="1741846853431" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1507" width="28" height="28"><path d="M512 1023.90001c-23.397715 0-228.977639-14.398594-228.977639-511.950005S488.502295 0 512 0c105.589689 0 228.877649 134.086906 228.877649 511.950005s-123.28796 511.950005-228.877649 511.950005z m0-968.60541c-69.793184 0-173.683039 121.588126-173.683039 456.655405S442.206816 968.505419 512 968.505419c59.994141 0 173.583049-95.490675 173.583049-456.655404S572.094131 55.2946 512 55.2946z" fill="#1296db" p-id="1508"></path><path d="M218.92862 854.816522c-28.497217 0-52.094913-3.499658-71.393028-8.59916-43.495752-11.698858-77.292452-35.396543-95.290694-66.793478-11.698858-20.497998-101.390099-207.179768 345.266283-467.154379C652.08632 163.983986 799.171956 158.084562 877.5643 179.082511c43.295772 11.598867 76.792501 34.896592 94.190802 65.493605 52.694854 91.991017-5.999414 269.573674-345.166292 467.054389-191.881262 111.689093-321.968558 143.186017-407.66019 143.186017z m585.642809-629.238551c-72.492921 0-192.881164 25.897471-379.262963 134.486866C123.037985 536.047652 65.343619 690.732546 100.240211 751.826579c6.199395 10.698955 22.297822 30.297041 61.593985 40.896007 55.09462 14.598574 184.981935 17.698272 436.857338-128.987404 325.968167-189.781467 355.065326-339.166878 325.068255-391.761742-5.899424-10.199004-21.497901-28.997168-60.494092-39.496143-14.398594-3.799629-33.696709-6.899326-58.694268-6.899326z" fill="#1296db" p-id="1509"></path><path d="M805.07138 854.816522c-85.691632 0-215.778928-31.496924-407.560199-143.186017C58.344302 514.14979-0.449956 336.567132 52.244898 244.476125c17.498291-30.597012 50.99502-53.894737 94.290792-65.493604 78.692315-21.09794 225.677961-14.898545 480.05312 133.186994 446.656381 260.074602 356.86515 446.656381 345.166292 467.054389-17.998242 31.396934-51.794942 55.19461-95.290694 66.793477-19.298115 5.299482-42.895811 8.799141-71.393028 8.799141zM100.240211 271.97344c-29.997071 52.594864-0.799922 202.080266 325.068255 391.761742 251.875403 146.685675 381.862709 143.685968 436.857338 128.987404 39.296162-10.498975 55.494581-30.097061 61.593985-40.896007C958.656381 690.732546 900.962015 536.047652 598.691534 360.064837 348.116004 214.179084 216.928816 217.578752 160.834294 232.477297c-38.996192 10.498975-54.694659 29.197149-60.594083 39.496143z" fill="#1296db" p-id="1510"></path></svg>`;
+        const aiAvatar = `<svg t="1741846853431" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1507" width="28" height="28"><path d="M512 1023.90001c-23.397715 0-228.977639-14.398594-228.977639-511.950005S488.502295 0 512 0c105.589689 0 228.877649 134.086906 228.877649 511.950005s-123.28796 511.950005-228.877649 511.950005z m0-968.60541c-69.793184 0-173.683039 121.588126-173.683039 456.655405S442.206816 968.505419 512 968.505419c59.994141 0 173.583049-95.490675 173.583049-456.655404S572.094131 55.2946 512 55.2946z" fill="#0099ff" p-id="1508"></path><path d="M218.92862 854.816522c-28.497217 0-52.094913-3.499658-71.393028-8.59916-43.495752-11.698858-77.292452-35.396543-95.290694-66.793478-11.698858-20.497998-101.390099-207.179768 345.266283-467.154379C652.08632 163.983986 799.171956 158.084562 877.5643 179.082511c43.295772 11.598867 76.792501 34.896592 94.190802 65.493605 52.694854 91.991017-5.999414 269.573674-345.166292 467.054389-191.881262 111.689093-321.968558 143.186017-407.66019 143.186017z m585.642809-629.238551c-72.492921 0-192.881164 25.897471-379.262963 134.486866C123.037985 536.047652 65.343619 690.732546 100.240211 751.826579c6.199395 10.698955 22.297822 30.297041 61.593985 40.896007 55.09462 14.598574 184.981935 17.698272 436.857338-128.987404 325.968167-189.781467 355.065326-339.166878 325.068255-391.761742-5.899424-10.199004-21.497901-28.997168-60.494092-39.496143-14.398594-3.799629-33.696709-6.899326-58.694268-6.899326z" fill="#0099ff" p-id="1509"></path><path d="M805.07138 854.816522c-85.691632 0-215.778928-31.496924-407.560199-143.186017C58.344302 514.14979-0.449956 336.567132 52.244898 244.476125c17.498291-30.597012 50.99502-53.894737 94.290792-65.493604 78.692315-21.09794 225.677961-14.898545 480.05312 133.186994 446.656381 260.074602 356.86515 446.656381 345.166292 467.054389-17.998242 31.396934-51.794942 55.19461-95.290694 66.793477-19.298115 5.299482-42.895811 8.799141-71.393028 8.799141zM100.240211 271.97344c-29.997071 52.594864-0.799922 202.080266 325.068255 391.761742 251.875403 146.685675 381.862709 143.685968 436.857338 128.987404 39.296162-10.498975 55.494581-30.097061 61.593985-40.896007C958.656381 690.732546 900.962015 536.047652 598.691534 360.064837 348.116004 214.179084 216.928816 217.578752 160.834294 232.477297c-38.996192 10.498975-54.694659 29.197149-60.594083 39.496143z" fill="#0099ff" p-id="1510"></path></svg>`;
         // User avatar
         const userAvatar = generateUserAvatar();
         // Initialize app state
@@ -1266,7 +1349,6 @@
                 typingIndicator.remove();
             }
         }
-        
         // Format conversation history for API
         function formatConversationHistory(conversation) {
             // Get previous messages from the conversation
@@ -1276,105 +1358,81 @@
                     content: msg.content
                 };
             });
-            
             return previousMessages;
         }
-        
         // Create a structured prompt with conversation history
         function createStructuredPrompt(userInput, conversation) {
             let formattedMessages = formatConversationHistory(conversation);
-            
             // Add current user message
             formattedMessages.push({
                 role: 'user',
                 content: userInput
             });
-            
             // Create prompt format
             let prompt = '';
-            
             // Add system prompt if exists
             if (state.systemPrompt) {
                 prompt += `System: ${state.systemPrompt}\n\n`;
             }
-            
             // Add conversation history
             formattedMessages.forEach(msg => {
                 const role = msg.role === 'user' ? 'User' : 'Assistant';
                 prompt += `${role}: ${msg.content}\n\n`;
             });
-            
             return prompt;
         }
-        
         // Send a message to the AI
         async function sendMessage() {
             const userInput = elements.messageInput.value.trim();
             if (!userInput || state.isAiTyping) return;
-            
             // Add user message to the conversation
             const conversation = getCurrentConversation();
             if (!conversation) return;
-            
             // Check if this is the first message and update the conversation title
             if (conversation.messages.length === 0) {
                 // Use the first message as the conversation title
                 conversation.title = userInput.length > 30 ? userInput.substring(0, 30) + '...' : userInput;
             }
-            
             // Add timestamp to the message
             const timestamp = new Date();
-            
             // Add user message
             conversation.messages.push({
                 role: 'user',
                 content: userInput,
                 timestamp: timestamp.toISOString()
             });
-            
             // Clear input and resize
             elements.messageInput.value = '';
             elements.messageInput.style.height = 'auto';
-            
             // Render the updated conversation
             renderCurrentConversation();
             saveState();
-            
             // Scroll to bottom
             scrollToBottom();
-            
             // Add typing indicator to show AI is responding
             addTypingIndicator();
-            
             // Create structured prompt with conversation history
             const structuredPrompt = createStructuredPrompt(userInput, conversation);
-            
             // Encode the prompt for URL
             const encodedPrompt = encodeURIComponent(structuredPrompt);
             const apiUrl = `https://text.pollinations.ai/${encodedPrompt}?model=${state.currentModel.name}`;
-            
             try {
                 // Create a placeholder message for the AI's response
                 const aiMessageId = Date.now().toString();
-                
                 // Fetch the response
                 const response = await fetch(apiUrl);
-                
                 // Get the full response
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let aiResponse = '';
-                
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
                     const chunk = decoder.decode(value, { stream: true });
                     aiResponse += chunk;
                 }
-                
                 // Remove typing indicator and add the full response
                 removeTypingIndicator();
-                
                 // Add the full response
                 const responseTimestamp = new Date();
                 conversation.messages.push({
@@ -1384,16 +1442,13 @@
                     model: state.currentModel.description,
                     timestamp: responseTimestamp.toISOString()
                 });
-                
                 renderCurrentConversation();
                 scrollToBottom();
                 saveState();
             } catch (error) {
                 console.error('Error fetching AI response:', error);
-                
                 // Remove typing indicator if present
                 removeTypingIndicator();
-                
                 // Add error message
                 const errorTimestamp = new Date();
                 conversation.messages.push({
@@ -1402,13 +1457,11 @@
                     model: state.currentModel.description,
                     timestamp: errorTimestamp.toISOString()
                 });
-                
                 renderCurrentConversation();
                 saveState();
                 scrollToBottom();
             }
         }
-        
         // Detect the type of code for proper preview rendering
         function detectCodeType(code) {
             if (code.indexOf('<html') >= 0 || (code.indexOf('<') === 0 && code.indexOf('</') > 0)) {
