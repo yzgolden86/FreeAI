@@ -464,12 +464,12 @@
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
         }
-/* 取消所有元素的滚动条 */
+
 ::-webkit-scrollbar {
     display: none; /* Chrome, Safari 和 Opera */
 }
 
-/* Firefox 则使用 */
+
 .no-scrollbar {
     scrollbar-width: none; /* Firefox */
 }
@@ -553,7 +553,7 @@
     100% { left: 100%; }
 }
 
-/* 添加点击动画 */
+
 .sci-fi-btn:active {
     transform: scale(0.45);
     transition: 0.1s;
@@ -562,7 +562,7 @@
 </style>
 
 <a href="https://freeai.aihub.ren" class="sci-fi-btn" style="text-decoration: none;">
-    <!-- 添加流光边框 -->
+    
     <span class="glowing-border"></span>
     <span class="glowing-border"></span>
     返回首页
@@ -851,18 +851,13 @@
                 }
             });
             
-            // 下载图像
-            downloadBtn.addEventListener('click', function() {
-                if (previewImage.src) {
-                    const a = document.createElement('a');
-                    a.href = previewImage.src;
-                    a.download = `ai-image-${Date.now()}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    showNotification('图像已下载', 'success');
-                }
-            });
+           downloadBtn.addEventListener('click', function() {
+    if (previewImage.src) {
+        // 直接在新标签页打开图片
+        window.open(previewImage.src, '_blank');
+        showNotification('图像已在新窗口打开', 'success');
+    }
+});
             
             // 复制提示词
             copyPromptBtn.addEventListener('click', function() {
