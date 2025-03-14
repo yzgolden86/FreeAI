@@ -7,6 +7,7 @@ FreeAI - 基于 [Pollinations.AI](https://pollinations.ai/) API的AI应用平台
 3. 提供AI语音合成功能，将文本转换为逼真的多种语言和声音风格的语音。
 4. **免注册登录，无限制使用，完全免费。**
 
+在Vercel部署👇
 <a href="https://vercel.com/new/clone?repository-url=https://github.com/Azad-sl/FreeAI&amp;project-name=FreeAI;repository-name=FreeAI" rel="nofollow"><img src="https://camo.githubusercontent.com/20bea215d35a4e28f2c92ea5b657d006b087687486858a40de2922a4636301ab/68747470733a2f2f76657263656c2e636f6d2f627574746f6e" alt="" data-canonical-src="https://vercel.com/button" style="max-width: 100%;"></a>
 
 觉得好用可以请我喝杯咖啡❤
