@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="favicon.ico">
-    <i class="fab fa-github" style="color: var(--neon-blue);"></i>
     <title>FreeAI - 基于 Pollinations.AI </title>
     <style>
         :root {
@@ -29,13 +29,20 @@
             box-sizing: border-box;
             font-family: 'Courier New', monospace;
         }
-        body {
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-            perspective: 1000px;
-        }
+body {
+    background-color: var(--dark-bg);
+    color: #ffffff;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+
         /* 星空背景 */
         .stars-container {
             position: fixed;
@@ -122,13 +129,17 @@
             opacity: 0.15;
             z-index: 1;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 2;
-        }
+       .container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
         header {
             text-align: center;
             margin-bottom: 4rem;
@@ -531,16 +542,17 @@
             letter-spacing: 2px;
             backdrop-filter: blur(5px);
         }
-        footer {
-            margin-top: 6rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8rem;
-            letter-spacing: 1.5px;
-            position: relative;
-            z-index: 5;
-            padding: 2rem 0;
-        }
+       footer {
+    margin-top: 6rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    position: relative;
+    z-index: 5;
+    padding: 2rem 0;
+    width: 100%;
+}
         footer::before {
             content: '';
             position: absolute;
@@ -660,7 +672,7 @@
             </div>
         </div>
         <footer>
-            <p>© 2025 <i class="fab fa-github" style="color: var(--neon-blue);"></i>  Free AI | 基于 Pollinations.AI | <a href="https://other.azad.asia" target="_blank" style="text-decoration: none; color: inherit;">Azad的实验室</a></p>
+            <p>© 2025 <a href="https://github.com/Azad-sl/FreeAI" target="_blank" style="text-decoration: none; color: inherit;"><i class="fab fa-github" style="color: var(--neon-blue);"></i>   Free AI</a> | 基于 Pollinations.AI | <a href="https://other.azad.asia" target="_blank" style="text-decoration: none; color: inherit;">Azad的实验室</a></p>
         </footer>
     </div>
     <script>
@@ -806,11 +818,11 @@
                 });
                 
                 // 背景光效跟随
-                document.body.style.backgroundImage = `
-                    radial-gradient(circle at ${mouseX * 100}% ${mouseY * 100}%, rgba(1, 200, 238, 0.2) 0%, transparent 50%),
-                    radial-gradient(circle at ${85 - mouseX * 30}% ${30 + mouseY * 40}%, rgba(174, 95, 248, 0.1) 0%, transparent 40%),
-                    radial-gradient(circle at ${15 + mouseX * 30}% ${70 - mouseY * 40}%, rgba(255, 42, 109, 0.1) 0%, transparent 40%)
-                `;
+document.body.style.backgroundImage = `
+    radial-gradient(circle at ${mouseX * 100}% ${mouseY * 100}%, rgba(1, 200, 238, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at ${85 - mouseX * 30}% ${30 + mouseY * 40}%, rgba(174, 95, 248, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at ${15 + mouseX * 30}% ${70 - mouseY * 40}%, rgba(255, 42, 109, 0.1) 0%, transparent 40%)
+`;
             });
         }
         
