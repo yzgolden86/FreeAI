@@ -18,4 +18,4 @@ FreeAI - 基于 [Pollinations.AI](https://pollinations.ai/) API的AI应用平台
 
 觉得好用可以请我喝杯咖啡❤
 
-[<img src="https://s21.ax1x.com/2025/03/14/pEae92Q.png" alt="pEae92Q.png" style="zoom: 20%;" width="400"  />](https://imgse.com/i/pEae92Q)
+<img src="https://github.com/user-attachments/assets/e9eecbdd-f266-467e-b615-71b67d8e8f17" alt="pEae92Q.png" style="zoom: 20%;" width="400"  />
