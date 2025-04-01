@@ -9,7 +9,8 @@ FreeAI - 基于 [Pollinations.AI](https://pollinations.ai/) API的AI应用平台
 
 体验地址：[freeai.aihub.ren](https://freeai.aihub.ren/)
 
-![image](https://github.com/user-attachments/assets/5a76c6b7-0c62-41af-868c-f593d0429adc)
+<img src="https://github.com/user-attachments/assets/5a76c6b7-0c62-41af-868c-f593d0429adc" alt="ee.png" style="zoom: 60%;" width="400"  />
+
 
 
 在Vercel部署👇
