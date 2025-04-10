@@ -771,8 +771,14 @@ transition: all 0.2s ease;
 .avatar { width: 28px; height: 28px; }
 .message-content { font-size: 14px; }
 .timestamp { font-size: 11px; padding: 3px 8px; }
-.settings-row { flex-direction: column; gap: 8px; }
-.voice-selector, .context-selector { width: 60%; }
+.settings-row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .voice-selector, .context-selector {
+    width: auto;
+  }
 .audio-container { max-width: 100%; }
 }
 </style>
@@ -808,9 +814,6 @@ transition: all 0.2s ease;
 </svg>
 </button>
 <h1>Free AI 语音聊天助手</h1><br>
-<p><font size="1" color="#888888">
-    Tips：请先点击左侧“新对话”按钮，开启对话。
-</font></p>
 </div>
 <div class="header-buttons">
 <button class="theme-toggle" id="themeToggle">
@@ -875,7 +878,10 @@ transition: all 0.2s ease;
 </button>
 </div>
 </div>
+
+
 <div class="settings-row">
+
 <div class="voice-selector">
 <select id="voiceSelect">
 <option value="alloy">Alloy - 平稳中性</option>
@@ -900,7 +906,11 @@ transition: all 0.2s ease;
 <option value="10">读取前10条消息</option>
 </select>
 </div>
+
 </div>
+<p><font size="2" color="#888888">
+    Tips：请先点击左侧“新对话”按钮，开启对话。
+</font></p>
 </div>
 </div>
 </div>
