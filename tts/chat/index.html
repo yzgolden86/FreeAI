@@ -1,2196 +1,1649 @@
-<!DOCTYPE html>
 <html lang="zh-CN" class="light-mode">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free AI 语音聊天助手</title>
-    <style>
-        :root {
-            /* 亮色模式变量 */
-            --bg-color: #f7f7f8;
-            --container-bg: #ffffff;
-            --header-bg: #ffffff;
-            --header-color: #202123;
-            --chat-bg: #f7f7f8;
-            --text-color: #2d333a;
-            --text-secondary: #6e7681;
-            --text-muted: #8e8ea0;
-            --border-color: #e5e5e5;
-            --user-bubble: #10a37f;
-            --user-text: #ffffff;
-            --bot-bubble: #ffffff;
-            --input-bg: #ffffff;
-            --button-bg: #10a37f;
-            --button-color: white;
-            --dropdown-bg: white;
-            --modal-bg: white;
-            --modal-shadow: rgba(0, 0, 0, 0.2);
-            --overlay-bg: rgba(0, 0, 0, 0.5);
-            --error-color: #ff4d4f;
-            --wave-bg: rgba(0, 0, 0, 0.03);
-            --wave-bar: #10a37f;
-            --timestamp-bg: rgba(0, 0, 0, 0.05);
-            --scrollbar-track: rgba(0, 0, 0, 0.05);
-            --scrollbar-thumb: rgba(0, 0, 0, 0.1);
-            --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
-            --voice-btn-bg: #f0f0f0;
-            --voice-btn-color: #666;
-            --voice-btn-active: #10a37f;
-            --btn-secondary-bg: #f0f0f0;
-            --btn-secondary-color: #333;
-            --btn-secondary-hover: #e0e0e0;
-            --dropdown-hover: #f5f5f5;
-            --dropdown-border: #f0f0f0;
-            --context-info-bg: rgba(255, 255, 255, 0.8);
-            --sidebar-bg: #202123;
-            --sidebar-text: #ffffff;
-            --sidebar-hover: #343541;
-            --sidebar-selected: #343541;
-            --sidebar-border: #4d4d4f;
-            --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            --input-border: #d9d9e3;
-            --input-focus-border: #10a37f;
-            --input-focus-shadow: rgba(16, 163, 127, 0.2);
-        }
-        
-        .dark-mode {
-            /* 暗色模式变量 */
-            --bg-color: #343541;
-            --container-bg: #343541;
-            --header-bg: #343541;
-            --header-color: #ececf1;
-            --chat-bg: #343541;
-            --text-color: #ececf1;
-            --text-secondary: #c5c5d2;
-            --text-muted: #8e8ea0;
-            --border-color: #4d4d4f;
-            --user-bubble: #10a37f;
-            --user-text: #ffffff;
-            --bot-bubble: #444654;
-            --input-bg: #40414f;
-            --button-bg: #10a37f;
-            --button-color: white;
-            --dropdown-bg: #40414f;
-            --modal-bg: #40414f;
-            --modal-shadow: rgba(0, 0, 0, 0.5);
-            --overlay-bg: rgba(0, 0, 0, 0.7);
-            --error-color: #ff7875;
-            --wave-bg: rgba(255, 255, 255, 0.05);
-            --wave-bar: #10a37f;
-            --timestamp-bg: rgba(255, 255, 255, 0.1);
-            --scrollbar-track: rgba(255, 255, 255, 0.05);
-            --scrollbar-thumb: rgba(255, 255, 255, 0.1);
-            --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
-            --voice-btn-bg: #565869;
-            --voice-btn-color: #ececf1;
-            --voice-btn-active: #10a37f;
-            --btn-secondary-bg: #565869;
-            --btn-secondary-color: #ececf1;
-            --btn-secondary-hover: #444654;
-            --dropdown-hover: #565869;
-            --dropdown-border: #4d4d4f;
-            --context-info-bg: rgba(0, 0, 0, 0.5);
-            --sidebar-bg: #202123;
-            --sidebar-text: #ffffff;
-            --sidebar-hover: #343541;
-            --sidebar-selected: #343541;
-            --sidebar-border: #4d4d4f;
-            --box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            --input-border: #565869;
-            --input-focus-border: #10a37f;
-            --input-focus-shadow: rgba(16, 163, 127, 0.4);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Helvetica Neue", Arial;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-        
-        body {
-            background-color: var(--bg-color);
-            height: 100vh;
-            display: flex;
-            color: var(--text-color);
-            overflow: hidden;
-        }
-        
-        .app-container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            border-right: 1px solid var(--sidebar-border);
-            transition: transform 0.3s ease;
-            z-index: 20;
-        }
-        
-        .sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--sidebar-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .new-chat-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: transparent;
-            border: 1px solid var(--sidebar-border);
-            border-radius: 6px;
-            color: var(--sidebar-text);
-            padding: 10px 14px;
-            width: 100%;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-        
-        .new-chat-btn:hover {
-            background-color: var(--sidebar-hover);
-        }
-        
-        .new-chat-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-        
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
-        
-        .chat-history-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 14px;
-            cursor: pointer;
-            border-radius: 6px;
-            margin: 2px 8px;
-            font-size: 14px;
-            color: var(--sidebar-text);
-            transition: background-color 0.2s;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .chat-history-item:hover {
-            background-color: var(--sidebar-hover);
-        }
-        
-        .chat-history-item.active {
-            background-color: var(--sidebar-selected);
-        }
-        
-        .chat-history-item svg {
-            width: 16px;
-            height: 16px;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid var(--sidebar-border);
-        }
-        
-        .sidebar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        .sidebar-user:hover {
-            background-color: var(--sidebar-hover);
-        }
-        
-        .sidebar-user-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            background-color: var(--user-bubble);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .sidebar-user-name {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-        }
-        
-        .header {
-            padding: 16px;
-            background: var(--header-bg);
-            color: var(--header-color);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 10;
-            height: 60px;
-        }
-        
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .theme-toggle, .menu-button {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .theme-toggle:hover, .menu-button:hover {
-            background-color: var(--dropdown-hover);
-        }
-        
-        .settings-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .voice-selector, .context-selector {
-            position: relative;
-        }
-        
-        .settings-row select {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            appearance: none;
-            padding-right: 30px;
-            transition: all 0.2s ease;
-        }
-        
-        .settings-row select:hover {
-            border-color: var(--text-secondary);
-        }
-        
-        .settings-row select:focus {
-            border-color: var(--input-focus-border);
-            box-shadow: 0 0 0 2px var(--input-focus-shadow);
-        }
-        
-        .voice-selector::after,
-        .context-selector::after {
-            content: "▼";
-            font-size: 10px;
-            color: var(--text-secondary);
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-        
-        .settings-row select option {
-            background-color: var(--dropdown-bg);
-            color: var(--text-color);
-        }
-        
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--chat-bg);
-            scroll-behavior: smooth;
-        }
-        
-        .message-group {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-        
-        .message-row {
-            display: flex;
-            padding: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .message-row.user-message {
-            background-color: var(--container-bg);
-        }
-        
-        .message-row.bot-message {
-            background-color: var(--bot-bubble);
-        }
-        
-        .message-container {
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-            display: flex;
-            gap: 16px;
-        }
-        
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 500;
-            font-size: 14px;
-            flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .user-avatar {
-            background-color: var(--user-bubble);
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .bot-avatar {
-            background-color: #10a37f;
-        }
-        
-        .message-content {
-            flex: 1;
-            font-size: 16px;
-            line-height: 1.5;
-            overflow-wrap: break-word;
-        }
-        
-        .user-content {
-            color: var(--text-color);
-        }
-        
-        .bot-content {
-            color: var(--text-color);
-        }
-        
-        .audio-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-            max-width: 350px;
-            background-color: var(--wave-bg);
-            border-radius: 20px;
-            padding: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .voice-wave {
-            flex: 1;
-            height: 40px;
-            border-radius: 18px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-        }
-        
-        .voice-wave:hover {
-            background-color: rgba(16, 163, 127, 0.1);
-        }
-        
-        .wave-animation {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .bar {
-            background-color: var(--wave-bar);
-            height: 70%;
-            width: 3px;
-            border-radius: 3px;
-            animation: sound 0ms -800ms linear infinite alternate;
-        }
-        
-        @keyframes sound {
-            0% {
-                height: 10%;
-            }
-            100% {
-                height: 80%;
-            }
-        }
-        
-        .bar:nth-child(1) { animation-duration: 474ms; }
-        .bar:nth-child(2) { animation-duration: 433ms; }
-        .bar:nth-child(3) { animation-duration: 407ms; }
-        .bar:nth-child(4) { animation-duration: 458ms; }
-        .bar:nth-child(5) { animation-duration: 400ms; }
-        .bar:nth-child(6) { animation-duration: 427ms; }
-        .bar:nth-child(7) { animation-duration: 441ms; }
-        .bar:nth-child(8) { animation-duration: 419ms; }
-        .bar:nth-child(9) { animation-duration: 487ms; }
-        .bar:nth-child(10) { animation-duration: 442ms; }
-        
-        .voice-duration {
-            font-size: 13px;
-            color: var(--text-secondary);
-            min-width: 40px;
-            text-align: right;
-            padding-right: 10px;
-        }
-        
-        .play-button {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--wave-bar);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-left: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
-        }
-        
-        .play-button:hover {
-            transform: scale(1.05);
-        }
-        
-        .play-button svg {
-            width: 16px;
-            height: 16px;
-            fill: white;
-        }
-        
-        .input-area {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--container-bg);
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .input-container {
-            max-width: 800px;
-            width: 100%;
-            position: relative;
-        }
-        
-        .input-field {
-            width: 100%;
-            border: 1px solid var(--input-border);
-            border-radius: 8px;
-            padding: 12px 50px 12px 16px;
-            font-size: 16px;
-            outline: none;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            resize: none;
-            min-height: 52px;
-            max-height: 200px;
-            box-shadow: 0 0 0 0 transparent;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            overflow-y: auto;
-            line-height: 1.5;
-        }
-        
-        .input-field:focus {
-            border-color: var(--input-focus-border);
-            box-shadow: 0 0 0 2px var(--input-focus-shadow);
-        }
-        
-        .input-buttons {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            gap: 8px;
-        }
-        
-        .voice-input-btn, .send-btn {
-            border: none;
-            border-radius: 6px;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: transparent;
-        }
-        
-        .voice-input-btn {
-            color: var(--text-secondary);
-        }
-        
-        .voice-input-btn:hover {
-            background-color: var(--wave-bg);
-            color: var(--button-bg);
-        }
-        
-        .voice-input-btn.recording {
-            background: var(--voice-btn-active);
-            color: white;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(16, 163, 127, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(16, 163, 127, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(16, 163, 127, 0);
-            }
-        }
-        
-        .send-btn {
-            color: var(--button-bg);
-        }
-        
-        .send-btn:hover {
-            background-color: var(--wave-bg);
-        }
-        
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .send-icon, .mic-icon {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(16, 163, 127, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--button-bg);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .timestamp {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            margin: 15px 0;
-            padding: 4px 10px;
-            border-radius: 10px;
-            display: inline-block;
-            align-self: center;
-        }
-        
-        .paused .bar {
-            animation-play-state: paused;
-        }
-        
-        .playing .bar {
-            animation-play-state: running;
-        }
-        
-        .error-message {
-            color: var(--error-color);
-            margin-top: 5px;
-            font-size: 14px;
-            padding: 8px 12px;
-            background-color: rgba(255, 77, 79, 0.1);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .error-message svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--error-color);
-        }
-        
-        .context-info {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-align: center;
-            padding: 6px 12px;
-            background-color: var(--context-info-bg);
-            border-radius: 15px;
-            margin: 10px auto;
-            max-width: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        
-        .context-info svg {
-            width: 14px;
-            height: 14px;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 50px;
-            right: 15px;
-            background-color: var(--dropdown-bg);
-            border-radius: 8px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-            display: none;
-            overflow: hidden;
-            width: 200px;
-            border: 1px solid var(--border-color);
-        }
-        
-        .dropdown-menu.active {
-            display: block;
-            animation: dropdownFadeIn 0.3s ease;
-        }
-        
-        @keyframes dropdownFadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .dropdown-item {
-            padding: 12px 16px;
-            font-size: 14px;
-            color: var(--text-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.2s ease;
-        }
-        
-        .dropdown-item:hover {
-            background-color: var(--dropdown-hover);
-        }
-        
-        .dropdown-icon {
-            width: 16px;
-            height: 16px;
-            fill: var(--text-secondary);
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--overlay-bg);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(3px);
-        }
-        
-        .modal {
-            background-color: var(--modal-bg);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 5px 25px var(--modal-shadow);
-            padding: 24px;
-            position: relative;
-            animation: modalFadeIn 0.3s ease;
-        }
-        
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .modal-title {
-            font-size: 18px;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .close-btn:hover {
-            background-color: var(--btn-secondary-bg);
-            color: var(--text-secondary);
-        }
-        
-        .modal-body {
-            margin-bottom: 24px;
-            color: var(--text-color);
-        }
-        
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .modal-btn {
-            padding: 10px 18px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-primary {
-            background: var(--button-bg);
-            color: var(--button-color);
-        }
-        
-        .btn-primary:hover {
-            opacity: 0.9;
-            box-shadow: 0 2px 10px rgba(16, 163, 127, 0.3);
-        }
-        
-        .btn-secondary {
-            background-color: var(--btn-secondary-bg);
-            color: var(--btn-secondary-color);
-        }
-        
-        .btn-secondary:hover {
-            background-color: var(--btn-secondary-hover);
-        }
-        
-        .export-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .export-option {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 12px;
-            border-radius: 8px;
-            transition: background-color 0.2s ease;
-        }
-        
-        .export-option:hover {
-            background-color: var(--dropdown-hover);
-        }
-        
-        .export-option input {
-            margin-right: 12px;
-            accent-color: var(--button-bg);
-            width: 18px;
-            height: 18px;
-        }
-        
-        .export-option-info {
-            flex: 1;
-        }
-        
-        .export-option-title {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        
-        .export-option-desc {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .export-icon {
-            width: 32px;
-            height: 32px;
-            padding: 6px;
-            border-radius: 50%;
-            background-color: rgba(16, 163, 127, 0.1);
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .export-icon svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--button-bg);
-        }
-        
-        /* 滚动条样式 */
-        .chat-area::-webkit-scrollbar,
-        .sidebar-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .chat-area::-webkit-scrollbar-track,
-        .sidebar-content::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-        }
-        
-        .chat-area::-webkit-scrollbar-thumb,
-        .sidebar-content::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 3px;
-        }
-        
-        .chat-area::-webkit-scrollbar-thumb:hover,
-        .sidebar-content::-webkit-scrollbar-thumb:hover {
-            background: var(--scrollbar-thumb-hover);
-        }
-        
-        /* 移动端适配 */
-        @media (max-width: 992px) {
-            .sidebar {
-                position: fixed;
-                left: -260px;
-                top: 0;
-                bottom: 0;
-                width: 260px;
-                z-index: 30;
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.active {
-                transform: translateX(260px);
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .overlay-sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 25;
-                display: none;
-            }
-            
-            .overlay-sidebar.active {
-                display: block;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .message-container {
-                gap: 12px;
-            }
-            
-            .avatar {
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
-            
-            .message-content {
-                font-size: 15px;
-            }
-            
-            .input-area {
-                padding: 12px 16px;
-            }
-            
-            .input-field {
-                padding: 10px 50px 10px 14px;
-                font-size: 15px;
-                min-height: 48px;
-            }
-            
-            .modal {
-                width: 95%;
-                padding: 20px;
-            }
-            
-            .dropdown-menu {
-                width: 180px;
-            }
-            
-            .header h1 {
-                font-size: 16px;
-            }
-            
-            .settings-row select {
-                font-size: 13px;
-                padding: 6px 8px;
-            }
-            
-            .voice-selector::after,
-            .context-selector::after {
-                right: 10px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .message-row {
-                padding: 16px 12px;
-            }
-            
-            .message-container {
-                gap: 10px;
-            }
-            
-            .avatar {
-                width: 28px;
-                height: 28px;
-            }
-            
-            .message-content {
-                font-size: 14px;
-            }
-            
-            .timestamp {
-                font-size: 11px;
-                padding: 3px 8px;
-            }
-            
-            .settings-row {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .voice-selector, .context-selector {
-                width: 100%;
-            }
-            
-            .audio-container {
-                max-width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free AI 语音聊天助手</title>
+<style>
+:root {
+/* 亮色模式变量 */
+--bg-color: #f7f7f8;
+--container-bg: #ffffff;
+--header-bg: #ffffff;
+--header-color: #202123;
+--chat-bg: #f7f7f8;
+--text-color: #2d333a;
+--text-secondary: #6e7681;
+--text-muted: #8e8ea0;
+--border-color: #e5e5e5;
+--user-bubble: #10a37f;
+--user-text: #ffffff;
+--bot-bubble: #ffffff;
+--input-bg: #ffffff;
+--button-bg: #10a37f;
+--button-color: white;
+--dropdown-bg: white;
+--modal-bg: white;
+--modal-shadow: rgba(0, 0, 0, 0.2);
+--overlay-bg: rgba(0, 0, 0, 0.5);
+--error-color: #ff4d4f;
+--wave-bg: rgba(0, 0, 0, 0.03);
+--wave-bar: #10a37f;
+--timestamp-bg: rgba(0, 0, 0, 0.05);
+--scrollbar-track: rgba(0, 0, 0, 0.05);
+--scrollbar-thumb: rgba(0, 0, 0, 0.1);
+--scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+--voice-btn-bg: #f0f0f0;
+--voice-btn-color: #666;
+--voice-btn-active: #10a37f;
+--btn-secondary-bg: #f0f0f0;
+--btn-secondary-color: #333;
+--btn-secondary-hover: #e0e0e0;
+--dropdown-hover: #f5f5f5;
+--dropdown-border: #f0f0f0;
+--context-info-bg: rgba(255, 255, 255, 0.8);
+--sidebar-bg: #202123;
+--sidebar-text: #ffffff;
+--sidebar-hover: #343541;
+--sidebar-selected: #343541;
+--sidebar-border: #4d4d4f;
+--box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+--input-border: #d9d9e3;
+--input-focus-border: #10a37f;
+--input-focus-shadow: rgba(16, 163, 127, 0.2);
+}
+.dark-mode {
+/* 暗色模式变量 */
+--bg-color: #343541;
+--container-bg: #343541;
+--header-bg: #343541;
+--header-color: #ececf1;
+--chat-bg: #343541;
+--text-color: #ececf1;
+--text-secondary: #c5c5d2;
+--text-muted: #8e8ea0;
+--border-color: #4d4d4f;
+--user-bubble: #10a37f;
+--user-text: #ffffff;
+--bot-bubble: #444654;
+--input-bg: #40414f;
+--button-bg: #10a37f;
+--button-color: white;
+--dropdown-bg: #40414f;
+--modal-bg: #40414f;
+--modal-shadow: rgba(0, 0, 0, 0.5);
+--overlay-bg: rgba(0, 0, 0, 0.7);
+--error-color: #ff7875;
+--wave-bg: rgba(255, 255, 255, 0.05);
+--wave-bar: #10a37f;
+--timestamp-bg: rgba(255, 255, 255, 0.1);
+--scrollbar-track: rgba(255, 255, 255, 0.05);
+--scrollbar-thumb: rgba(255, 255, 255, 0.1);
+--scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+--voice-btn-bg: #565869;
+--voice-btn-color: #ececf1;
+--voice-btn-active: #10a37f;
+--btn-secondary-bg: #565869;
+--btn-secondary-color: #ececf1;
+--btn-secondary-hover: #444654;
+--dropdown-hover: #565869;
+--dropdown-border: #4d4d4f;
+--context-info-bg: rgba(0, 0, 0, 0.5);
+--sidebar-bg: #202123;
+--sidebar-text: #ffffff;
+--sidebar-hover: #343541;
+--sidebar-selected: #343541;
+--sidebar-border: #4d4d4f;
+--box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+--input-border: #565869;
+--input-focus-border: #10a37f;
+--input-focus-shadow: rgba(16, 163, 127, 0.4);
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Helvetica Neue", Arial;
+transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+body {
+background-color: var(--bg-color);
+height: 100vh;
+display: flex;
+color: var(--text-color);
+overflow: hidden;
+}
+.app-container {
+display: flex;
+width: 100%;
+height: 100%;
+}
+.sidebar {
+width: 260px;
+background-color: var(--sidebar-bg);
+color: var(--sidebar-text);
+display: flex;
+flex-direction: column;
+height: 100%;
+border-right: 1px solid var(--sidebar-border);
+transition: transform 0.3s ease;
+z-index: 20;
+}
+.sidebar-header {
+padding: 16px;
+border-bottom: 1px solid var(--sidebar-border);
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.new-chat-btn {
+display: flex;
+align-items: center;
+gap: 10px;
+background-color: transparent;
+border: 1px solid var(--sidebar-border);
+border-radius: 6px;
+color: var(--sidebar-text);
+padding: 10px 14px;
+width: 100%;
+cursor: pointer;
+font-size: 14px;
+transition: background-color 0.2s;
+}
+.new-chat-btn:hover {
+background-color: var(--sidebar-hover);
+}
+.new-chat-btn svg {
+width: 16px;
+height: 16px;
+}
+.sidebar-content {
+flex: 1;
+overflow-y: auto;
+padding: 10px 0;
+}
+.chat-history-item {
+display: flex;
+align-items: center;
+padding: 10px 14px;
+cursor: pointer;
+border-radius: 6px;
+margin: 2px 8px;
+font-size: 14px;
+color: var(--sidebar-text);
+transition: background-color 0.2s;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.chat-history-item:hover {
+background-color: var(--sidebar-hover);
+}
+.chat-history-item.active {
+background-color: var(--sidebar-selected);
+}
+.chat-history-item svg {
+width: 16px;
+height: 16px;
+margin-right: 10px;
+flex-shrink: 0;
+}
+.sidebar-footer {
+padding: 16px;
+border-top: 1px solid var(--sidebar-border);
+}
+.sidebar-user {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 14px;
+cursor: pointer;
+padding: 8px;
+border-radius: 6px;
+transition: background-color 0.2s;
+}
+.sidebar-user:hover {
+background-color: var(--sidebar-hover);
+}
+.sidebar-user-avatar {
+width: 24px;
+height: 24px;
+border-radius: 4px;
+background-color: var(--user-bubble);
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 12px;
+font-weight: 500;
+}
+.sidebar-user-name {
+flex: 1;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.main-content {
+flex: 1;
+display: flex;
+flex-direction: column;
+height: 100%;
+position: relative;
+}
+.header {
+padding: 16px;
+background: var(--header-bg);
+color: var(--header-color);
+border-bottom: 1px solid var(--border-color);
+display: flex;
+align-items: center;
+justify-content: space-between;
+z-index: 10;
+height: 60px;
+}
+.header-title {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 16px;
+font-weight: 500;
+}
+.mobile-menu-btn {
+display: none;
+background: none;
+border: none;
+color: var(--text-color);
+font-size: 20px;
+cursor: pointer;
+padding: 5px;
+}
+.header-buttons {
+display: flex;
+gap: 10px;
+}
+.theme-toggle, .menu-button {
+background: none;
+border: none;
+color: var(--text-color);
+font-size: 20px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+width: 36px;
+height: 36px;
+border-radius: 6px;
+transition: all 0.2s ease;
+}
+.theme-toggle:hover, .menu-button:hover {
+background-color: var(--dropdown-hover);
+}
+.settings-row {
+display: flex;
+gap: 10px;
+margin-top: 10px;
+}
+.voice-selector, .context-selector {
+position: relative;
+}
+.settings-row select {
+padding: 8px 12px;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+background-color: var(--input-bg);
+color: var(--text-color);
+font-size: 14px;
+cursor: pointer;
+outline: none;
+appearance: none;
+padding-right: 30px;
+transition: all 0.2s ease;
+}
+.settings-row select:hover {
+border-color: var(--text-secondary);
+}
+.settings-row select:focus {
+border-color: var(--input-focus-border);
+box-shadow: 0 0 0 2px var(--input-focus-shadow);
+}
+.voice-selector::after,
+.context-selector::after {
+content: "▼";
+font-size: 10px;
+color: var(--text-secondary);
+position: absolute;
+right: 12px;
+top: 50%;
+transform: translateY(-50%);
+pointer-events: none;
+}
+.settings-row select option {
+background-color: var(--dropdown-bg);
+color: var(--text-color);
+}
+.chat-container {
+flex: 1;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+.chat-area {
+flex: 1;
+overflow-y: auto;
+padding: 0;
+display: flex;
+flex-direction: column;
+background-color: var(--chat-bg);
+scroll-behavior: smooth;
+}
+.message-group {
+display: flex;
+flex-direction: column;
+width: 100%;
+}
+.message-row {
+display: flex;
+padding: 20px;
+transition: background-color 0.2s;
+}
+.message-row.user-message {
+background-color: var(--container-bg);
+}
+.message-row.bot-message {
+background-color: var(--bot-bubble);
+}
+.message-container {
+max-width: 800px;
+margin: 0 auto;
+width: 100%;
+display: flex;
+gap: 16px;
+}
+.avatar {
+width: 36px;
+height: 36px;
+border-radius: 4px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-weight: 500;
+font-size: 14px;
+flex-shrink: 0;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.user-avatar {
+background-color: var(--user-bubble);
+background-size: cover;
+background-position: center;
+}
+.bot-avatar {
+background-color: #10a37f;
+}
+.message-content {
+flex: 1;
+font-size: 16px;
+line-height: 1.5;
+overflow-wrap: break-word;
+}
+.user-content {
+color: var(--text-color);
+}
+.bot-content {
+color: var(--text-color);
+}
+.audio-container {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-top: 15px;
+max-width: 350px;
+background-color: var(--wave-bg);
+border-radius: 20px;
+padding: 4px;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.voice-wave {
+flex: 1;
+height: 40px;
+border-radius: 18px;
+position: relative;
+overflow: hidden;
+cursor: pointer;
+transition: background-color 0.2s ease;
+display: flex;
+align-items: center;
+padding: 0 15px;
+}
+.voice-wave:hover {
+background-color: rgba(16, 163, 127, 0.1);
+}
+.wave-animation {
+height: 100%;
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.bar {
+background-color: var(--wave-bar);
+height: 70%;
+width: 3px;
+border-radius: 3px;
+animation: sound 0ms -800ms linear infinite alternate;
+}
+@keyframes sound {
+0% { height: 10%; }
+100% { height: 80%; }
+}
+.bar:nth-child(1) { animation-duration: 474ms; }
+.bar:nth-child(2) { animation-duration: 433ms; }
+.bar:nth-child(3) { animation-duration: 407ms; }
+.bar:nth-child(4) { animation-duration: 458ms; }
+.bar:nth-child(5) { animation-duration: 400ms; }
+.bar:nth-child(6) { animation-duration: 427ms; }
+.bar:nth-child(7) { animation-duration: 441ms; }
+.bar:nth-child(8) { animation-duration: 419ms; }
+.bar:nth-child(9) { animation-duration: 487ms; }
+.bar:nth-child(10) { animation-duration: 442ms; }
+.voice-duration {
+font-size: 13px;
+color: var(--text-secondary);
+min-width: 40px;
+text-align: right;
+padding-right: 10px;
+}
+.play-button {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+background-color: var(--wave-bar);
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+margin-left: 8px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+transition: transform 0.2s;
+}
+.play-button:hover {
+transform: scale(1.05);
+}
+.play-button svg {
+width: 16px;
+height: 16px;
+fill: white;
+}
+/* 下载按钮样式 */
+.download-btn {
+background-color: var(--btn-secondary-bg);
+color: var(--btn-secondary-color);
+border: none;
+border-radius: 6px;
+padding: 4px 8px;
+cursor: pointer;
+font-size: 12px;
+transition: background-color 0.2s;
+}
+.download-btn:hover {
+background-color: var(--btn-secondary-hover);
+}
+.input-area {
+padding: 16px 20px;
+border-top: 1px solid var(--border-color);
+background-color: var(--container-bg);
+z-index: 5;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.input-container {
+max-width: 800px;
+width: 100%;
+position: relative;
+}
+.input-field {
+width: 100%;
+border: 1px solid var(--input-border);
+border-radius: 8px;
+padding: 12px 50px 12px 16px;
+font-size: 16px;
+outline: none;
+background-color: var(--input-bg);
+color: var(--text-color);
+resize: none;
+min-height: 52px;
+max-height: 200px;
+box-shadow: 0 0 0 0 transparent;
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+overflow-y: auto;
+line-height: 1.5;
+}
+.input-field:focus {
+border-color: var(--input-focus-border);
+box-shadow: 0 0 0 2px var(--input-focus-shadow);
+}
+.input-buttons {
+position: absolute;
+right: 8px;
+top: 50%;
+transform: translateY(-50%);
+display: flex;
+gap: 8px;
+}
+.voice-input-btn, .send-btn {
+border: none;
+border-radius: 6px;
+width: 36px;
+height: 36px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: all 0.2s ease;
+background: transparent;
+}
+.voice-input-btn {
+color: var(--text-secondary);
+}
+.voice-input-btn:hover {
+background-color: var(--wave-bg);
+color: var(--button-bg);
+}
+.voice-input-btn.recording {
+background: var(--voice-btn-active);
+color: white;
+animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+0% { box-shadow: 0 0 0 0 rgba(16, 163, 127, 0.4); }
+70% { box-shadow: 0 0 0 10px rgba(16, 163, 127, 0); }
+100% { box-shadow: 0 0 0 0 rgba(16, 163, 127, 0); }
+}
+.send-btn {
+color: var(--button-bg);
+}
+.send-btn:hover {
+background-color: var(--wave-bg);
+}
+.send-btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+.send-icon, .mic-icon {
+width: 20px;
+height: 20px;
+}
+.loading {
+display: inline-block;
+width: 20px;
+height: 20px;
+border: 2px solid rgba(16, 163, 127, 0.3);
+border-radius: 50%;
+border-top-color: var(--button-bg);
+animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+.timestamp {
+font-size: 12px;
+color: var(--text-muted);
+text-align: center;
+margin: 15px 0;
+padding: 4px 10px;
+border-radius: 10px;
+display: inline-block;
+align-self: center;
+}
+.paused .bar { animation-play-state: paused; }
+.playing .bar { animation-play-state: running; }
+.error-message {
+color: var(--error-color);
+margin-top: 5px;
+font-size: 14px;
+padding: 8px 12px;
+background-color: rgba(255, 77, 79, 0.1);
+border-radius: 6px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.error-message svg { width: 16px; height: 16px; fill: var(--error-color); }
+.context-info {
+font-size: 12px;
+color: var(--text-secondary);
+text-align: center;
+padding: 6px 12px;
+background-color: var(--context-info-bg);
+border-radius: 15px;
+margin: 10px auto;
+max-width: 300px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+}
+.context-info svg { width: 14px; height: 14px; }
+.dropdown-menu {
+position: absolute;
+top: 50px;
+right: 15px;
+background-color: var(--dropdown-bg);
+border-radius: 8px;
+box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+z-index: 10;
+display: none;
+overflow: hidden;
+width: 200px;
+border: 1px solid var(--border-color);
+}
+.dropdown-menu.active {
+display: block;
+animation: dropdownFadeIn 0.3s ease;
+}
+@keyframes dropdownFadeIn {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.dropdown-item {
+padding: 12px 16px;
+font-size: 14px;
+color: var(--text-color);
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: background-color 0.2s ease;
+}
+.dropdown-item:hover { background-color: var(--dropdown-hover); }
+.dropdown-icon { width: 16px; height: 16px; fill: var(--text-secondary); }
+.overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: var(--overlay-bg);
+z-index: 100;
+display: none;
+justify-content: center;
+align-items: center;
+backdrop-filter: blur(3px);
+}
+.modal {
+background-color: var(--modal-bg);
+border-radius: 12px;
+width: 90%;
+max-width: 500px;
+max-height: 90vh;
+overflow-y: auto;
+box-shadow: 0 5px 25px var(--modal-shadow);
+padding: 24px;
+position: relative;
+animation: modalFadeIn 0.3s ease;
+}
+@keyframes modalFadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+padding-bottom: 15px;
+border-bottom: 1px solid var(--border-color);
+}
+.modal-title {
+font-size: 18px;
+color: var(--text-color);
+font-weight: 500;
+}
+.close-btn {
+background: none;
+border: none;
+font-size: 22px;
+cursor: pointer;
+color: var(--text-muted);
+display: flex;
+align-items: center;
+justify-content: center;
+width: 30px;
+height: 30px;
+border-radius: 6px;
+transition: all 0.2s ease;
+}
+.close-btn:hover { background-color: var(--btn-secondary-bg); color: var(--text-secondary); }
+.modal-body {
+margin-bottom: 24px;
+color: var(--text-color);
+}
+.modal-footer {
+display: flex;
+justify-content: flex-end;
+gap: 12px;
+padding-top: 15px;
+border-top: 1px solid var(--border-color);
+}
+.modal-btn {
+padding: 10px 18px;
+border-radius: 6px;
+border: none;
+cursor: pointer;
+font-size: 14px;
+transition: all 0.2s ease;
+}
+.btn-primary { background: var(--button-bg); color: var(--button-color); }
+.btn-primary:hover { opacity: 0.9; box-shadow: 0 2px 10px rgba(16, 163, 127, 0.3); }
+.btn-secondary { background-color: var(--btn-secondary-bg); color: var(--btn-secondary-color); }
+.btn-secondary:hover { background-color: var(--btn-secondary-hover); }
+/* 移动端适配 */
+@media (max-width: 992px) {
+.sidebar { position: fixed; left: -260px; top: 0; bottom: 0; width: 260px; z-index: 30; transition: transform 0.3s ease; }
+.sidebar.active { transform: translateX(260px); }
+.mobile-menu-btn { display: block; }
+.overlay-sidebar { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 25; display: none; }
+.overlay-sidebar.active { display: block; }
+}
+@media (max-width: 768px) {
+.message-container { gap: 12px; }
+.avatar { width: 30px; height: 30px; font-size: 12px; }
+.message-content { font-size: 15px; }
+.input-area { padding: 12px 16px; }
+.input-field { padding: 10px 50px 10px 14px; font-size: 15px; min-height: 48px; }
+.modal { width: 95%; padding: 20px; }
+.dropdown-menu { width: 180px; }
+.header h1 { font-size: 16px; }
+.settings-row select { font-size: 13px; padding: 6px 8px; }
+.voice-selector::after, .context-selector::after { right: 10px; }
+}
+@media (max-width: 480px) {
+.message-row { padding: 16px 12px; }
+.message-container { gap: 10px; }
+.avatar { width: 28px; height: 28px; }
+.message-content { font-size: 14px; }
+.timestamp { font-size: 11px; padding: 3px 8px; }
+.settings-row { flex-direction: column; gap: 8px; }
+.voice-selector, .context-selector { width: 100%; }
+.audio-container { max-width: 100%; }
+}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <button class="new-chat-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    新对话
-                </button>
-            </div>
-            <div class="sidebar-content">
-                <div class="chat-history-item active">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    当前对话
-                </div>
-            </div>
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="sidebar-user-avatar">U</div>
-                    <div class="sidebar-user-name">用户</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="overlay-sidebar" id="overlaySidebar"></div>
-        
-        <div class="main-content">
-            <div class="header">
-                <div class="header-title">
-                    <button class="mobile-menu-btn" id="mobileMenuBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                    <h1>Free AI 语音聊天助手</h1>
-                </div>
-                <div class="header-buttons">
-                    <button class="theme-toggle" id="themeToggle">
-                        <svg class="theme-icon" id="lightIcon" viewBox="0 0 24 24" style="display: none;">
-                            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-                        </svg>
-                        <svg class="theme-icon" id="darkIcon" viewBox="0 0 24 24">
-                            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
-                        </svg>
-                    </button>
-                    <button class="menu-button" id="menuButton">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <div class="dropdown-item" id="exportChat">
-                        <svg class="dropdown-icon" viewBox="0 0 24 24">
-                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                        </svg>
-                        导出聊天记录
-                    </div>
-                    <div class="dropdown-item" id="clearChat">
-                        <svg class="dropdown-icon" viewBox="0 0 24 24">
-                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                        </svg>
-                        清空聊天记录
-                    </div>
-                    <div class="dropdown-item" id="settingsItem">
-                        <svg class="dropdown-icon" viewBox="0 0 24 24">
-                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                        </svg>
-                        设置
-                    </div>
-                </div>
-            </div>
-            
-            <div class="chat-container">
-                <div class="chat-area" id="chatArea">
-                    <div class="timestamp">今天 <span id="currentTime"></span></div>
-                </div>
-                
-                <div class="input-area">
-                    <div class="input-container">
-                        <textarea class="input-field" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
-                        <div class="input-buttons">
-                            <button class="voice-input-btn" id="voiceInputBtn">
-                                <svg class="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M19 11V12C19 15.87 15.87 19 12 19C8.13 19 5 15.87 5 12V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M12 19V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M8 22H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="send-btn" id="sendBtn">
-                                <svg class="send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="voice-selector">
-                            <select id="voiceSelect">
-                                <option value="alloy">Alloy - 平稳中性</option>
-                                <option value="echo">Echo - 深沉有力</option>
-                                <option value="fable">Fable - 温和舒适</option>
-                                <option value="onyx">Onyx - 坚定严肃</option>
-                                <option value="nova">Nova - 热情活力</option>
-                                <option value="shimmer">Shimmer - 清脆明亮</option>
-                                <option value="coral">Coral - 温暖亲切</option>
-                                <option value="verse">Verse - 抒情优雅</option>
-                                <option value="ballad">Ballad - 柔和深情</option>
-                                <option value="ash">Ash - 冷静理智</option>
-                                <option value="sage">Sage - 智慧沉稳</option>
-                                <option value="amuch">Amuch - 亲切友好</option>
-                                <option value="dan">Dan - 自信专业</option>
-                            </select>
-                        </div>
-                        <div class="context-selector">
-                            <select id="contextSelect">
-                                <option value="0">不读取上下文</option>
-                                <option value="5">读取前5条消息</option>
-                                <option value="10">读取前10条消息</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 导出对话模态框 -->
-    <div class="overlay" id="exportModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">导出聊天记录</h3>
-                <button class="close-btn" id="closeExportModal">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="export-options">
-                    <label class="export-option">
-                        <input type="radio" name="exportFormat" value="text" checked>
-                        <div class="export-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                            </svg>
-                        </div>
-                        <div class="export-option-info">
-                            <div class="export-option-title">文本文件</div>
-                            <div class="export-option-desc">导出为纯文本格式 (.txt)</div>
-                        </div>
-                    </label>
-                    <label class="export-option">
-                        <input type="radio" name="exportFormat" value="json">
-                        <div class="export-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/>
-                                <path d="M8 14h8v2H8zM8 11h5v2H8zM8 17h8v2H8z"/>
-                            </svg>
-                        </div>
-                        <div class="export-option-info">
-                            <div class="export-option-title">JSON文件</div>
-                            <div class="export-option-desc">导出为结构化数据 (.json)</div>
-                        </div>
-                    </label>
-                    <label class="export-option">
-                        <input type="radio" name="exportFormat" value="html">
-                        <div class="export-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/>
-                                <path d="M9.5 11.5l-2 2 2 2M14.5 11.5l2 2-2 2M12 17l-1-6"/>
-                            </svg>
-                        </div>
-                        <div class="export-option-info">
-                            <div class="export-option-title">HTML文件</div>
-                            <div class="export-option-desc">包含可播放语音的网页 (.html)</div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn btn-secondary" id="cancelExport">取消</button>
-                <button class="modal-btn btn-primary" id="confirmExport">导出</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 清空确认模态框 -->
-    <div class="overlay" id="clearModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">确认清空聊天记录</h3>
-                <button class="close-btn" id="closeClearModal">×</button>
-            </div>
-            <div class="modal-body">
-                <p>确定要清空所有聊天记录吗？此操作不可恢复。</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn btn-secondary" id="cancelClear">取消</button>
-                <button class="modal-btn btn-primary" id="confirmClear">确认清空</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 设置模态框 -->
-    <div class="overlay" id="settingsModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">设置</h3>
-                <button class="close-btn" id="closeSettingsModal">×</button>
-            </div>
-            <div class="modal-body">
-                <p>更多设置选项将在未来版本中提供。</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn btn-primary" id="saveSettings">确定</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatArea = document.getElementById('chatArea');
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const voiceInputBtn = document.getElementById('voiceInputBtn');
-            const voiceSelect = document.getElementById('voiceSelect');
-            const contextSelect = document.getElementById('contextSelect');
-            const menuButton = document.getElementById('menuButton');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            const exportChat = document.getElementById('exportChat');
-            const clearChat = document.getElementById('clearChat');
-            const settingsItem = document.getElementById('settingsItem');
-            const exportModal = document.getElementById('exportModal');
-            const clearModal = document.getElementById('clearModal');
-            const settingsModal = document.getElementById('settingsModal');
-            const closeExportModal = document.getElementById('closeExportModal');
-            const cancelExport = document.getElementById('cancelExport');
-            const confirmExport = document.getElementById('confirmExport');
-            const closeClearModal = document.getElementById('closeClearModal');
-            const cancelClear = document.getElementById('cancelClear');
-            const confirmClear = document.getElementById('confirmClear');
-            const closeSettingsModal = document.getElementById('closeSettingsModal');
-            const saveSettings = document.getElementById('saveSettings');
-            const themeToggle = document.getElementById('themeToggle');
-            const lightIcon = document.getElementById('lightIcon');
-            const darkIcon = document.getElementById('darkIcon');
-            const sidebar = document.getElementById('sidebar');
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const overlaySidebar = document.getElementById('overlaySidebar');
-            
-            // 设置当前时间
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-            
-            // 当前播放的音频元素
-            let currentlyPlaying = null;
-            
-            // 存储聊天记录
-            let chatHistory = [];
-            const STORAGE_KEY = 'voiceChatHistory';
-            
-            // 存储用户头像
-            let userAvatar = localStorage.getItem('userAvatar') || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Math.random();
-            
-            // 语音识别
-            let recognition = null;
-            let isRecording = false;
-            
-            // 主题设置
-            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-            const currentTheme = localStorage.getItem('theme');
-            
-            if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
-                document.documentElement.classList.add('dark-mode');
-                lightIcon.style.display = 'block';
-                darkIcon.style.display = 'none';
-            } else {
-                document.documentElement.classList.remove('dark-mode');
-                lightIcon.style.display = 'none';
-                darkIcon.style.display = 'block';
-            }
-            
-            // 切换主题
-            themeToggle.addEventListener('click', function() {
-                if (document.documentElement.classList.contains('dark-mode')) {
-                    document.documentElement.classList.remove('dark-mode');
-                    localStorage.setItem('theme', 'light');
-                    lightIcon.style.display = 'none';
-                    darkIcon.style.display = 'block';
-                } else {
-                    document.documentElement.classList.add('dark-mode');
-                    localStorage.setItem('theme', 'dark');
-                    lightIcon.style.display = 'block';
-                    darkIcon.style.display = 'none';
-                }
-            });
-            
-            // 移动端菜单
-            mobileMenuBtn.addEventListener('click', function() {
-                sidebar.classList.add('active');
-                overlaySidebar.classList.add('active');
-            });
-            
-            overlaySidebar.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-                overlaySidebar.classList.remove('active');
-            });
-            
-            // 自动调整文本区域高度
-            messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
-            
-            // 初始化语音识别
-            function initSpeechRecognition() {
-                if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    recognition = new SpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = true;
-                    recognition.lang = 'zh-CN';
-                    
-                    recognition.onstart = function() {
-                        isRecording = true;
-                        voiceInputBtn.classList.add('recording');
-                    };
-                    
-                    recognition.onresult = function(event) {
-                        let interimTranscript = '';
-                        for (let i = event.resultIndex; i < event.results.length; i++) {
-                            if (event.results[i].isFinal) {
-                                messageInput.value += event.results[i][0].transcript;
-                            } else {
-                                interimTranscript += event.results[i][0].transcript;
-                            }
-                        }
-                        
-                        if (interimTranscript) {
-                            messageInput.value = messageInput.value + interimTranscript;
-                        }
-                        
-                        // 触发输入事件以调整高度
-                        messageInput.dispatchEvent(new Event('input'));
-                    };
-                    
-                    recognition.onend = function() {
-                        isRecording = false;
-                        voiceInputBtn.classList.remove('recording');
-                    };
-                    
-                    recognition.onerror = function(event) {
-                        console.error('语音识别错误:', event.error);
-                        isRecording = false;
-                        voiceInputBtn.classList.remove('recording');
-                    };
-                    
-                    voiceInputBtn.addEventListener('click', toggleSpeechRecognition);
-                } else {
-                    voiceInputBtn.style.display = 'none';
-                    console.log('浏览器不支持语音识别');
-                }
-            }
-            
-            // 切换语音识别
-            function toggleSpeechRecognition() {
-                if (isRecording) {
-                    recognition.stop();
-                } else {
-                    messageInput.value = '';
-                    recognition.start();
-                }
-            }
-            
-            // 加载保存的聊天记录
-            loadChatHistory();
-            
-            // 初始化语音识别
-            initSpeechRecognition();
-            
-            // 发送消息函数
-            function sendMessage() {
-                const message = messageInput.value.trim();
-                if (!message) return;
-                
-                // 清空输入框
-                messageInput.value = '';
-                messageInput.style.height = 'auto';
-                
-                // 添加用户消息到聊天区域
-                appendUserMessage(message);
-                
-                // 生成消息ID (用于存储音频URL)
-                const messageId = 'msg_' + Date.now();
-                
-                // 添加到聊天历史
-                chatHistory.push({
-                    id: messageId,
-                    role: 'user',
-                    content: message,
-                    timestamp: new Date().toISOString()
-                });
-                
-                // 保存聊天历史
-                saveChatHistory();
-                
-                // 滚动到底部
-                scrollToBottom();
-                
-                // 设置发送按钮为加载状态
-                sendBtn.innerHTML = '<div class="loading"></div>';
-                sendBtn.disabled = true;
-                
-                // 选择的语音和上下文设置
-                const selectedVoice = voiceSelect.value;
-                const contextCount = parseInt(contextSelect.value);
-                
-                // 构建消息内容，包括上下文
-                let fullMessage = message;
-                if (contextCount > 0) {
-                    // 获取前N条上下文消息
-                    const relevantHistory = chatHistory.slice(-Math.min(contextCount * 2 + 1, chatHistory.length));
-                    
-                    // 如果有上下文，构建完整消息
-                    if (relevantHistory.length > 1) {
-                        fullMessage = "以下是对话上下文：\n\n";
-                        
-                        for (let i = 0; i < relevantHistory.length - 1; i++) {
-                            const entry = relevantHistory[i];
-                            const role = entry.role === 'user' ? '用户' : '助手';
-                            fullMessage += `${role}：${entry.content}\n\n`;
-                        }
-                        
-                        fullMessage += "当前问题：\n" + message;
-                        
-                        // 显示正在使用上下文的提示
-                        appendContextInfo(contextCount);
-                    }
-                }
-                
-                // 构建API URL
-                const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(fullMessage)}?model=openai-audio&voice=${selectedVoice}`;
-                
-                // 创建新的音频元素
-                const audio = new Audio(apiUrl);
-                
-                // 音频加载完成
-                audio.oncanplaythrough = function() {
-                    sendBtn.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-                    sendBtn.disabled = false;
-                    
-                    // 格式化音频时长
-                    const duration = audio.duration;
-                    const formattedDuration = formatTime(duration);
-                    
-                    // 添加机器人消息到聊天区域
-                    const botResponse = ""; // 这里可以添加文本回复内容，如果API返回的只有语音没有文本
-                    const botMessageId = 'bot_' + Date.now();
-                    appendBotMessage(audio, formattedDuration, botResponse, botMessageId);
-                    
-                    // 缓存音频URL (用于恢复聊天记录)
-                    const audioUrl = apiUrl;
-                    
-                    // 添加到聊天历史
-                    chatHistory.push({
-                        id: botMessageId,
-                        role: 'assistant',
-                        content: botResponse,
-                        audioUrl: audioUrl,
-                        duration: duration,
-                        voice: selectedVoice,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    // 保存聊天历史
-                    saveChatHistory();
-                    
-                    // 滚动到底部
-                    scrollToBottom();
-                };
-                
-                // 音频加载失败
-                audio.onerror = function() {
-                    sendBtn.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-                    sendBtn.disabled = false;
-                    
-                    // 添加错误消息
-                    const errorMessageId = 'error_' + Date.now();
-                    appendErrorMessage(selectedVoice, errorMessageId);
-                    
-                    // 添加到聊天历史
-                    chatHistory.push({
-                        id: errorMessageId,
-                        role: 'error',
-                        content: `${selectedVoice}正忙，请稍后提问或选择其他聊天助手`,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    // 保存聊天历史
-                    saveChatHistory();
-                    
-                    // 滚动到底部
-                    scrollToBottom();
-                };
-            }
-            
-            // 添加用户消息
-            function appendUserMessage(text, messageId) {
-                const messageGroup = document.createElement('div');
-                messageGroup.className = 'message-group';
-                
-                const messageRow = document.createElement('div');
-                messageRow.className = 'message-row user-message';
-                if (messageId) {
-                    messageRow.setAttribute('data-message-id', messageId);
-                }
-                
-                const messageContainer = document.createElement('div');
-                messageContainer.className = 'message-container';
-                
-                const avatar = document.createElement('div');
-                avatar.className = 'avatar user-avatar';
-                avatar.style.backgroundImage = `url(${userAvatar})`;
-                
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content user-content';
-                messageContent.textContent = text;
-                
-                messageContainer.appendChild(avatar);
-                messageContainer.appendChild(messageContent);
-                messageRow.appendChild(messageContainer);
-                messageGroup.appendChild(messageRow);
-                chatArea.appendChild(messageGroup);
-            }
-            
-            // 添加上下文信息提示
-            function appendContextInfo(contextCount) {
-                const contextInfo = document.createElement('div');
-                contextInfo.className = 'context-info';
-                
-                const infoIcon = document.createElement('div');
-                infoIcon.innerHTML = `
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>`;
-                
-                const infoText = document.createElement('span');
-                infoText.textContent = `正在读取前${contextCount}条上下文消息...`;
-                
-                contextInfo.appendChild(infoIcon);
-                contextInfo.appendChild(infoText);
-                chatArea.appendChild(contextInfo);
-            }
-            
-            // 添加机器人消息
-            function appendBotMessage(audio, duration, text, messageId) {
-                // 设置音频元素的ID
-                if (messageId) {
-                    audio.dataAudioId = messageId;
-                }
-                
-                const messageGroup = document.createElement('div');
-                messageGroup.className = 'message-group';
-                
-                const messageRow = document.createElement('div');
-                messageRow.className = 'message-row bot-message';
-                if (messageId) {
-                    messageRow.setAttribute('data-message-id', messageId);
-                }
-                
-                const messageContainer = document.createElement('div');
-                messageContainer.className = 'message-container';
-                
-                const avatar = document.createElement('div');
-                avatar.className = 'avatar bot-avatar';
-                avatar.textContent = 'AI';
-                
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content bot-content';
-                
-                // 如果有文本回复，添加文本内容
-                if (text && text.trim().length > 0) {
-                    const textContent = document.createElement('div');
-                    textContent.textContent = text;
-                    textContent.style.marginBottom = '15px';
-                    messageContent.appendChild(textContent);
-                }
-                
-                const audioContainer = document.createElement('div');
-                audioContainer.className = 'audio-container';
-                
-                const playButton = document.createElement('div');
-                playButton.className = 'play-button';
-                playButton.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>`;
-                
-                const voiceWave = document.createElement('div');
-                voiceWave.className = 'voice-wave paused';
-                if (messageId) {
-                    voiceWave.setAttribute('data-audio-id', messageId);
-                } else {
-                    voiceWave.setAttribute('data-audio-id', Date.now().toString());
-                }
-                
-                const waveAnimation = document.createElement('div');
-                waveAnimation.className = 'wave-animation';
-                
-                // 创建音波条
-                for (let i = 0; i < 10; i++) {
-                    const bar = document.createElement('div');
-                    bar.className = 'bar';
-                    waveAnimation.appendChild(bar);
-                }
-                
-                const durationSpan = document.createElement('span');
-                durationSpan.className = 'voice-duration';
-                durationSpan.textContent = duration;
-                
-                voiceWave.appendChild(waveAnimation);
-                audioContainer.appendChild(playButton);
-                audioContainer.appendChild(voiceWave);
-                audioContainer.appendChild(durationSpan);
-                messageContent.appendChild(audioContainer);
-                
-                messageContainer.appendChild(avatar);
-                messageContainer.appendChild(messageContent);
-                messageRow.appendChild(messageContainer);
-                messageGroup.appendChild(messageRow);
-                chatArea.appendChild(messageGroup);
-                
-                // 添加点击事件
-                playButton.addEventListener('click', function() {
-                    playAudio(audio, voiceWave, playButton);
-                });
-                
-                voiceWave.addEventListener('click', function() {
-                    playAudio(audio, voiceWave, playButton);
-                });
-            }
-            
-            // 添加错误消息
-            function appendErrorMessage(voiceName, messageId) {
-                const messageGroup = document.createElement('div');
-                messageGroup.className = 'message-group';
-                
-                const messageRow = document.createElement('div');
-                messageRow.className = 'message-row bot-message';
-                if (messageId) {
-                    messageRow.setAttribute('data-message-id', messageId);
-                }
-                
-                const messageContainer = document.createElement('div');
-                messageContainer.className = 'message-container';
-                
-                const avatar = document.createElement('div');
-                avatar.className = 'avatar';
-                avatar.style.backgroundColor = '#ff4d4f';
-                avatar.textContent = '!';
-                
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content bot-content';
-                
-                const errorContent = document.createElement('div');
-                errorContent.className = 'error-message';
-                errorContent.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>${voiceName}正忙，请稍后提问或选择其他聊天助手</span>`;
-                
-                messageContent.appendChild(errorContent);
-                messageContainer.appendChild(avatar);
-                messageContainer.appendChild(messageContent);
-                messageRow.appendChild(messageContainer);
-                messageGroup.appendChild(messageRow);
-                chatArea.appendChild(messageGroup);
-            }
-            
-            // 播放音频
-            function playAudio(audio, waveElement, playButton) {
-                // 如果有正在播放的音频，停止它
-                if (currentlyPlaying && currentlyPlaying !== audio) {
-                    currentlyPlaying.pause();
-                    currentlyPlaying.currentTime = 0;
-                    
-                    // 恢复其他波形为暂停状态
-                    const allWaves = document.querySelectorAll('.voice-wave');
-                    allWaves.forEach(wave => {
-                        if (wave !== waveElement) {
-                            wave.classList.remove('playing');
-                            wave.classList.add('paused');
-                        }
-                    });
-                    
-                    // 恢复所有播放按钮
-                    const allPlayButtons = document.querySelectorAll('.play-button');
-                    allPlayButtons.forEach(btn => {
-                        if (btn !== playButton) {
-                            btn.innerHTML = `
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>`;
-                        }
-                    });
-                }
-                
-                // 如果当前音频暂停，则播放它
-                if (audio.paused) {
-                    audio.play();
-                    waveElement.classList.remove('paused');
-                    waveElement.classList.add('playing');
-                    playButton.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 4H6V20H10V4Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M18 4H14V20H18V4Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-                    currentlyPlaying = audio;
-                    
-                    // 播放结束时恢复波形
-                    audio.onended = function() {
-                        waveElement.classList.remove('playing');
-                        waveElement.classList.add('paused');
-                        playButton.innerHTML = `
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>`;
-                        currentlyPlaying = null;
-                    };
-                } else {
-                    // 否则暂停音频
-                    audio.pause();
-                    waveElement.classList.remove('playing');
-                    waveElement.classList.add('paused');
-                    playButton.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-                    currentlyPlaying = null;
-                }
-            }
-            
-            // 格式化时间 (将秒转为 MM:SS 格式)
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
-                return `${mins}:${secs}`;
-            }
-            
-            // 滚动到底部
-            function scrollToBottom() {
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
-            
-            // 保存聊天历史到localStorage
-            function saveChatHistory() {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
-            }
-            
-            // 加载聊天历史
-            function loadChatHistory() {
-                const savedHistory = localStorage.getItem(STORAGE_KEY);
-                if (savedHistory) {
-                    chatHistory = JSON.parse(savedHistory);
-                    
-                    // 恢复聊天界面
-                    chatHistory.forEach(entry => {
-                        if (entry.role === 'user') {
-                            appendUserMessage(entry.content, entry.id);
-                        } else if (entry.role === 'assistant') {
-                            // 创建音频元素
-                            if (entry.audioUrl) {
-                                const audio = new Audio(entry.audioUrl);
-                                const formattedDuration = formatTime(entry.duration);
-                                appendBotMessage(audio, formattedDuration, entry.content, entry.id);
-                            }
-                        } else if (entry.role === 'error') {
-                            appendErrorMessage(entry.content.split('正忙')[0], entry.id);
-                        }
-                    });
-                    
-                    // 滚动到底部
-                    scrollToBottom();
-                }
-            }
-            
-            // 导出聊天记录
-            function exportChatRecords(format) {
-                if (chatHistory.length === 0) {
-                    alert('没有聊天记录可导出');
-                    return;
-                }
-                
-                let content = '';
-                const filename = `聊天记录_${new Date().toISOString().slice(0, 10)}`;
-                
-                if (format === 'text') {
-                    // 文本格式
-                    chatHistory.forEach(entry => {
-                        const role = entry.role === 'user' ? '用户' : entry.role === 'assistant' ? '助手' : '系统';
-                        const timestamp = new Date(entry.timestamp).toLocaleString();
-                        content += `[${timestamp}] ${role}：${entry.content}\n\n`;
-                    });
-                    
-                    downloadFile(`${filename}.txt`, content, 'text/plain');
-                } else if (format === 'json') {
-                    // JSON格式
-                    content = JSON.stringify(chatHistory, null, 2);
-                    downloadFile(`${filename}.json`, content, 'application/json');
-                } else if (format === 'html') {
-                    // HTML格式 (包含可播放音频)
-                    content = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>聊天记录</title>
-                        <style>
-                            body { 
-                                font-family: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; 
-                                margin: 0; 
-                                padding: 20px; 
-                                background: #f7f7f8; 
-                                color: #2d333a;
-                            }
-                            .container { 
-                                max-width: 800px; 
-                                margin: 0 auto; 
-                                background: white; 
-                                padding: 20px; 
-                                border-radius: 12px; 
-                                box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-                            }
-                            .header {
-                                text-align: center;
-                                margin-bottom: 30px;
-                                padding-bottom: 15px;
-                                border-bottom: 1px solid #e5e5e5;
-                            }
-                            .header h1 {
-                                color: #10a37f;
-                                margin: 0;
-                                font-size: 24px;
-                            }
-                            .header p {
-                                color: #8e8ea0;
-                                margin: 5px 0 0;
-                                font-size: 14px;
-                            }
-                            .message-row {
-                                padding: 16px;
-                                margin-bottom: 10px;
-                            }
-                            .user-message {
-                                background-color: #ffffff;
-                            }
-                            .bot-message {
-                                background-color: #f7f7f8;
-                            }
-                            .message-container {
-                                display: flex;
-                                gap: 16px;
-                                max-width: 100%;
-                            }
-                            .avatar {
-                                width: 36px;
-                                height: 36px;
-                                border-radius: 4px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: white;
-                                font-weight: 500;
-                                font-size: 14px;
-                                flex-shrink: 0;
-                            }
-                            .user-avatar {
-                                background-color: #10a37f;
-                            }
-                            .bot-avatar {
-                                background-color: #10a37f;
-                            }
-                            .message-content {
-                                flex: 1;
-                                font-size: 16px;
-                                line-height: 1.5;
-                                overflow-wrap: break-word;
-                            }
-                            .timestamp {
-                                font-size: 12px;
-                                color: #8e8ea0;
-                                margin-top: 8px;
-                                text-align: right;
-                            }
-                            audio {
-                                width: 100%;
-                                margin-top: 10px;
-                                border-radius: 8px;
-                            }
-                            .error-message {
-                                color: #ff4d4f;
-                                padding: 8px 12px;
-                                background-color: rgba(255, 77, 79, 0.1);
-                                border-radius: 6px;
-                                margin-top: 5px;
-                            }
-                            @media (max-width: 768px) {
-                                .container {
-                                    padding: 15px;
-                                }
-                                .message-content {
-                                    font-size: 15px;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="container">
-                            <div class="header">
-                                <h1>聊天记录</h1>
-                                <p>导出时间：${new Date().toLocaleString()}</p>
-                            </div>
-                    `;
-                    
-                    chatHistory.forEach(entry => {
-                        const role = entry.role;
-                        const timestamp = new Date(entry.timestamp).toLocaleString();
-                        
-                        if (role === 'user') {
-                            content += `
-                            <div class="message-row user-message">
-                                <div class="message-container">
-                                    <div class="avatar user-avatar">用户</div>
-                                    <div class="message-content">
-                                        <div>${entry.content}</div>
-                                        <div class="timestamp">${timestamp}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        } else if (role === 'assistant') {
-                            content += `
-                            <div class="message-row bot-message">
-                                <div class="message-container">
-                                    <div class="avatar bot-avatar">AI</div>
-                                    <div class="message-content">
-                                        <div>${entry.content}</div>
-                                        ${entry.audioUrl ? `<audio controls src="${entry.audioUrl}"></audio>` : ''}
-                                        <div class="timestamp">${timestamp}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        } else if (role === 'error') {
-                            content += `
-                            <div class="message-row bot-message">
-                                <div class="message-container">
-                                    <div class="avatar" style="background-color: #ff4d4f;">!</div>
-                                    <div class="message-content">
-                                        <div class="error-message">${entry.content}</div>
-                                        <div class="timestamp">${timestamp}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        }
-                    });
-                    
-                    content += `
-                        </div>
-                    </body>
-                    </html>
-                    `;
-                    
-                    downloadFile(`${filename}.html`, content, 'text/html');
-                }
-                
-                closeExportModal.click();
-            }
-            
-            // 下载文件
-            function downloadFile(filename, content, type) {
-                const blob = new Blob([content], { type: type });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-            
-            // 清空聊天记录
-            function clearChatRecords() {
-                chatHistory = [];
-                localStorage.removeItem(STORAGE_KEY);
-                chatArea.innerHTML = '';
-                
-                // 添加时间戳
-                const timestampDiv = document.createElement('div');
-                timestampDiv.className = 'timestamp';
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                timestampDiv.innerHTML = `今天 <span id="currentTime">${hours}:${minutes}</span>`;
-                chatArea.appendChild(timestampDiv);
-                
-                closeClearModal.click();
-            }
-            
-            // 事件监听器
-            messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            sendBtn.addEventListener('click', sendMessage);
-            
-            menuButton.addEventListener('click', function() {
-                dropdownMenu.classList.toggle('active');
-            });
-            
-            // 点击页面其他地方关闭菜单
-            document.addEventListener('click', function(e) {
-                if (!menuButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.remove('active');
-                }
-            });
-            
-            // 导出聊天
-            exportChat.addEventListener('click', function() {
-                dropdownMenu.classList.remove('active');
-                exportModal.style.display = 'flex';
-            });
-            
-            // 清空聊天
-            clearChat.addEventListener('click', function() {
-                dropdownMenu.classList.remove('active');
-                clearModal.style.display = 'flex';
-            });
-            
-            // 设置
-            settingsItem.addEventListener('click', function() {
-                dropdownMenu.classList.remove('active');
-                settingsModal.style.display = 'flex';
-            });
-            
-            // 关闭导出模态框
-            closeExportModal.addEventListener('click', function() {
-                exportModal.style.display = 'none';
-            });
-            
-            cancelExport.addEventListener('click', function() {
-                exportModal.style.display = 'none';
-            });
-            
-            confirmExport.addEventListener('click', function() {
-                const format = document.querySelector('input[name="exportFormat"]:checked').value;
-                exportChatRecords(format);
-            });
-            
-            // 关闭清空模态框
-            closeClearModal.addEventListener('click', function() {
-                clearModal.style.display = 'none';
-            });
-            
-            cancelClear.addEventListener('click', function() {
-                clearModal.style.display = 'none';
-            });
-            
-            confirmClear.addEventListener('click', clearChatRecords);
-            
-            // 关闭设置模态框
-            closeSettingsModal.addEventListener('click', function() {
-                settingsModal.style.display = 'none';
-            });
-            
-            saveSettings.addEventListener('click', function() {
-                settingsModal.style.display = 'none';
-            });
-            
-            // 点击模态框外部关闭
-            exportModal.addEventListener('click', function(e) {
-                if (e.target === exportModal) {
-                    exportModal.style.display = 'none';
-                }
-            });
-            
-            clearModal.addEventListener('click', function(e) {
-                if (e.target === clearModal) {
-                    clearModal.style.display = 'none';
-                }
-            });
-            
-            settingsModal.addEventListener('click', function(e) {
-                if (e.target === settingsModal) {
-                    settingsModal.style.display = 'none';
-                }
-            });
-        });
-    </script>
+<div class="app-container">
+<div class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<button class="new-chat-btn" id="newChatBtn">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+新对话
+</button>
+</div>
+<div class="sidebar-content" id="sidebarContent">
+<!-- 会话列表在这里动态生成 -->
+</div>
+<div class="sidebar-footer">
+<div class="sidebar-user">
+<div class="sidebar-user-avatar">U</div>
+<div class="sidebar-user-name">用户</div>
+</div>
+</div>
+</div>
+<div class="overlay-sidebar" id="overlaySidebar"></div>
+<div class="main-content">
+<div class="header">
+<div class="header-title">
+<button class="mobile-menu-btn" id="mobileMenuBtn">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+<h1>Free AI 语音聊天助手</h1>
+</div>
+<div class="header-buttons">
+<button class="theme-toggle" id="themeToggle">
+<svg class="theme-icon" id="lightIcon" viewBox="0 0 24 24" style="display: none;">
+<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+</svg>
+<svg class="theme-icon" id="darkIcon" viewBox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+</svg>
+</button>
+<button class="menu-button" id="menuButton">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+</div>
+<div class="dropdown-menu" id="dropdownMenu">
+<!-- 导出功能仅保留 HTML 导出 -->
+<div class="dropdown-item" id="exportChat">
+<svg class="dropdown-icon" viewBox="0 0 24 24">
+<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+</svg>
+导出聊天记录
+</div>
+<div class="dropdown-item" id="clearChat">
+<svg class="dropdown-icon" viewBox="0 0 24 24">
+<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+</svg>
+清空聊天记录
+</div>
+<div class="dropdown-item" id="settingsItem">
+<svg class="dropdown-icon" viewBox="0 0 24 24">
+<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+</svg>
+设置
+</div>
+</div>
+</div>
+<div class="chat-container">
+<div class="chat-area" id="chatArea">
+<div class="timestamp">今天 <span id="currentTime"></span></div>
+</div>
+<div class="input-area">
+<div class="input-container">
+<textarea class="input-field" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+<div class="input-buttons">
+<button class="voice-input-btn" id="voiceInputBtn">
+<svg class="mic-icon" viewBox="0 0 24 24" fill="none">
+<path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19 11V12C19 15.87 15.87 19 12 19C8.13 19 5 15.87 5 12V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 19V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 22H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+<button class="send-btn" id="sendBtn">
+<svg class="send-icon" viewBox="0 0 24 24" fill="none">
+<path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+</div>
+</div>
+<div class="settings-row">
+<div class="voice-selector">
+<select id="voiceSelect">
+<option value="alloy">Alloy - 平稳中性</option>
+<option value="echo">Echo - 深沉有力</option>
+<option value="fable">Fable - 温和舒适</option>
+<option value="onyx">Onyx - 坚定严肃</option>
+<option value="nova">Nova - 热情活力</option>
+<option value="shimmer">Shimmer - 清脆明亮</option>
+<option value="coral">Coral - 温暖亲切</option>
+<option value="verse">Verse - 抒情优雅</option>
+<option value="ballad">Ballad - 柔和深情</option>
+<option value="ash">Ash - 冷静理智</option>
+<option value="sage">Sage - 智慧沉稳</option>
+<option value="amuch">Amuch - 亲切友好</option>
+<option value="dan">Dan - 自信专业</option>
+</select>
+</div>
+<div class="context-selector">
+<select id="contextSelect">
+<option value="0">不读取上下文</option>
+<option value="5">读取前5条消息</option>
+<option value="10">读取前10条消息</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 导出对话模态框（仅 HTML 导出） -->
+<div class="overlay" id="exportModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">导出聊天记录</h3>
+<button class="close-btn" id="closeExportModal">×</button>
+</div>
+<div class="modal-body">
+<p>聊天记录将以HTML格式导出，包含可播放的语音。</p>
+</div>
+<div class="modal-footer">
+<button class="modal-btn btn-secondary" id="cancelExport">取消</button>
+<button class="modal-btn btn-primary" id="confirmExport">导出</button>
+</div>
+</div>
+</div>
+<!-- 清空确认模态框 -->
+<div class="overlay" id="clearModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">确认清空聊天记录</h3>
+<button class="close-btn" id="closeClearModal">×</button>
+</div>
+<div class="modal-body">
+<p>确定要清空当前对话聊天记录吗？此操作不可恢复。</p>
+</div>
+<div class="modal-footer">
+<button class="modal-btn btn-secondary" id="cancelClear">取消</button>
+<button class="modal-btn btn-primary" id="confirmClear">确认清空</button>
+</div>
+</div>
+</div>
+<!-- 设置模态框（增加默认语音选择器，保存默认语音设置） -->
+<div class="overlay" id="settingsModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">设置</h3>
+<button class="close-btn" id="closeSettingsModal">×</button>
+</div>
+<div class="modal-body">
+<p>更多设置选项将在未来版本中提供。</p>
+<div style="margin-top:15px;">
+<label for="defaultVoiceSelect">默认语音：</label>
+<select id="defaultVoiceSelect">
+<option value="alloy">Alloy - 平稳中性</option>
+<option value="echo">Echo - 深沉有力</option>
+<option value="fable">Fable - 温和舒适</option>
+<option value="onyx">Onyx - 坚定严肃</option>
+<option value="nova">Nova - 热情活力</option>
+<option value="shimmer">Shimmer - 清脆明亮</option>
+<option value="coral">Coral - 温暖亲切</option>
+<option value="verse">Verse - 抒情优雅</option>
+<option value="ballad">Ballad - 柔和深情</option>
+<option value="ash">Ash - 冷静理智</option>
+<option value="sage">Sage - 智慧沉稳</option>
+<option value="amuch">Amuch - 亲切友好</option>
+<option value="dan">Dan - 自信专业</option>
+</select>
+</div>
+</div>
+<div class="modal-footer">
+<button class="modal-btn btn-primary" id="saveSettings">保存</button>
+</div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// 全局变量：记录所有会话、当前会话ID、存储 key、默认语音 key
+let conversations = [];
+let currentConversationId = null;
+const STORAGE_KEY = 'voiceConversations';
+const defaultVoiceKey = 'defaultVoice';
+
+// DOM 对象
+const chatArea = document.getElementById('chatArea');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const voiceInputBtn = document.getElementById('voiceInputBtn');
+const voiceSelect = document.getElementById('voiceSelect');
+const contextSelect = document.getElementById('contextSelect');
+const menuButton = document.getElementById('menuButton');
+const dropdownMenu = document.getElementById('dropdownMenu');
+const exportChat = document.getElementById('exportChat');
+const clearChat = document.getElementById('clearChat');
+const settingsItem = document.getElementById('settingsItem');
+const exportModal = document.getElementById('exportModal');
+const clearModal = document.getElementById('clearModal');
+const settingsModal = document.getElementById('settingsModal');
+const closeExportModal = document.getElementById('closeExportModal');
+const cancelExport = document.getElementById('cancelExport');
+const confirmExport = document.getElementById('confirmExport');
+const closeClearModal = document.getElementById('closeClearModal');
+const cancelClear = document.getElementById('cancelClear');
+const confirmClear = document.getElementById('confirmClear');
+const closeSettingsModal = document.getElementById('closeSettingsModal');
+const saveSettings = document.getElementById('saveSettings');
+const themeToggle = document.getElementById('themeToggle');
+const lightIcon = document.getElementById('lightIcon');
+const darkIcon = document.getElementById('darkIcon');
+const sidebar = document.getElementById('sidebar');
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const overlaySidebar = document.getElementById('overlaySidebar');
+const newChatBtn = document.getElementById('newChatBtn');
+const sidebarContent = document.getElementById('sidebarContent');
+const defaultVoiceSelect = document.getElementById('defaultVoiceSelect');
+
+// 设置当前时间
+const now = new Date();
+const hours = now.getHours().toString().padStart(2, '0');
+const minutes = now.getMinutes().toString().padStart(2, '0');
+document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+
+// 当前播放的音频元素
+let currentlyPlaying = null;
+
+// 语音识别变量
+let recognition = null;
+let isRecording = false;
+
+// 主题设置
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+const currentTheme = localStorage.getItem('theme');
+if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+document.documentElement.classList.add('dark-mode');
+lightIcon.style.display = 'block';
+darkIcon.style.display = 'none';
+} else {
+document.documentElement.classList.remove('dark-mode');
+lightIcon.style.display = 'none';
+darkIcon.style.display = 'block';
+}
+themeToggle.addEventListener('click', function() {
+if (document.documentElement.classList.contains('dark-mode')) {
+document.documentElement.classList.remove('dark-mode');
+localStorage.setItem('theme', 'light');
+lightIcon.style.display = 'none';
+darkIcon.style.display = 'block';
+} else {
+document.documentElement.classList.add('dark-mode');
+localStorage.setItem('theme', 'dark');
+lightIcon.style.display = 'block';
+darkIcon.style.display = 'none';
+}
+});
+mobileMenuBtn.addEventListener('click', function() {
+sidebar.classList.add('active');
+overlaySidebar.classList.add('active');
+});
+overlaySidebar.addEventListener('click', function() {
+sidebar.classList.remove('active');
+overlaySidebar.classList.remove('active');
+});
+messageInput.addEventListener('input', function() {
+this.style.height = 'auto';
+this.style.height = (this.scrollHeight) + 'px';
+});
+
+// 加载默认语音设置
+let defaultVoice = localStorage.getItem(defaultVoiceKey) || voiceSelect.options[0].value;
+voiceSelect.value = defaultVoice;
+defaultVoiceSelect.value = defaultVoice;
+
+// 会话相关操作
+function saveConversations() {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+}
+function loadConversations() {
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+conversations = JSON.parse(saved);
+if (conversations.length > 0) {
+currentConversationId = conversations[conversations.length - 1].id;
+loadConversation(currentConversationId);
+}
+}
+updateSidebar();
+}
+function updateSidebar() {
+sidebarContent.innerHTML = '';
+conversations.forEach(conv => {
+const item = document.createElement('div');
+item.className = 'chat-history-item';
+if (conv.id === currentConversationId) {
+item.classList.add('active');
+}
+// 若对话有首条用户消息，则以消息内容作为标题；否则显示“新对话”
+item.innerHTML = `
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+<path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+${conv.title}
+`;
+item.addEventListener('click', function() {
+currentConversationId = conv.id;
+updateSidebar();
+loadConversation(conv.id);
+});
+sidebarContent.appendChild(item);
+});
+}
+function loadConversation(convId) {
+const conv = conversations.find(c => c.id === convId);
+chatArea.innerHTML = '';
+const now = new Date();
+const hrs = now.getHours().toString().padStart(2, '0');
+const mins = now.getMinutes().toString().padStart(2, '0');
+const timestampDiv = document.createElement('div');
+timestampDiv.className = 'timestamp';
+timestampDiv.innerHTML = `今天 <span id="currentTime">${hrs}:${mins}</span>`;
+chatArea.appendChild(timestampDiv);
+if (conv && conv.messages) {
+conv.messages.forEach(entry => {
+if (entry.role === 'user') {
+appendUserMessage(entry.content, entry.id, false);
+} else if (entry.role === 'assistant') {
+if (entry.audioUrl) {
+const audio = new Audio(entry.audioUrl);
+const formattedDuration = formatTime(entry.duration);
+appendBotMessage(audio, formattedDuration, entry.content, entry.id, false);
+}
+} else if (entry.role === 'error') {
+appendErrorMessage(entry.content.split('正忙')[0], entry.id, false);
+}
+});
+}
+scrollToBottom();
+}
+function createNewConversation() {
+const newConv = {
+id: 'conv_' + Date.now(),
+title: '新对话',
+messages: []
+};
+conversations.push(newConv);
+currentConversationId = newConv.id;
+// 设置新对话时默认语音（使用用户在设置中保存的默认语音）
+voiceSelect.value = defaultVoice;
+updateSidebar();
+chatArea.innerHTML = '';
+const now = new Date();
+const hrs = now.getHours().toString().padStart(2, '0');
+const mins = now.getMinutes().toString().padStart(2, '0');
+const timestampDiv = document.createElement('div');
+timestampDiv.className = 'timestamp';
+timestampDiv.innerHTML = `今天 <span id="currentTime">${hrs}:${mins}</span>`;
+chatArea.appendChild(timestampDiv);
+saveConversations();
+}
+newChatBtn.addEventListener('click', function() {
+createNewConversation();
+});
+
+// 语音识别处理
+function initSpeechRecognition() {
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+recognition = new SpeechRecognition();
+recognition.continuous = false;
+recognition.interimResults = true;
+recognition.lang = 'zh-CN';
+recognition.onstart = function() {
+isRecording = true;
+voiceInputBtn.classList.add('recording');
+};
+recognition.onresult = function(event) {
+let interimTranscript = '';
+for (let i = event.resultIndex; i < event.results.length; i++) {
+if (event.results[i].isFinal) {
+messageInput.value += event.results[i][0].transcript;
+} else {
+interimTranscript += event.results[i][0].transcript;
+}
+}
+if (interimTranscript) {
+messageInput.value = messageInput.value + interimTranscript;
+}
+messageInput.dispatchEvent(new Event('input'));
+};
+recognition.onend = function() {
+isRecording = false;
+voiceInputBtn.classList.remove('recording');
+};
+recognition.onerror = function(event) {
+console.error('语音识别错误:', event.error);
+isRecording = false;
+voiceInputBtn.classList.remove('recording');
+};
+voiceInputBtn.addEventListener('click', toggleSpeechRecognition);
+} else {
+voiceInputBtn.style.display = 'none';
+console.log('浏览器不支持语音识别');
+}
+}
+function toggleSpeechRecognition() {
+if (isRecording) {
+recognition.stop();
+} else {
+messageInput.value = '';
+recognition.start();
+}
+}
+// 发送消息函数，将消息存入当前会话中
+function sendMessage() {
+const message = messageInput.value.trim();
+if (!message) return;
+messageInput.value = '';
+messageInput.style.height = 'auto';
+appendUserMessage(message);
+let conv = conversations.find(c => c.id === currentConversationId);
+const messageId = 'msg_' + Date.now();
+conv.messages.push({
+id: messageId,
+role: 'user',
+content: message,
+timestamp: new Date().toISOString()
+});
+// 更新会话标题（如果还为“新对话”，用首条用户消息预览标题）
+if (conv.title === '新对话' && message.length > 0) {
+conv.title = message.slice(0, 10) + '...';
+updateSidebar();
+}
+saveConversations();
+scrollToBottom();
+sendBtn.innerHTML = '<div class="loading"></div>';
+sendBtn.disabled = true;
+const selectedVoice = voiceSelect.value;
+const contextCount = parseInt(contextSelect.value);
+let fullMessage = message;
+if (contextCount > 0) {
+const msgs = conv.messages;
+let relevant = msgs.slice(-Math.min(contextCount * 2 + 1, msgs.length));
+if (relevant.length > 1) {
+fullMessage = "以下是对话上下文：\n\n";
+for (let i = 0; i < relevant.length - 1; i++) {
+const entry = relevant[i];
+const role = entry.role === 'user' ? '用户' : '助手';
+fullMessage += `${role}：${entry.content}\n\n`;
+}
+fullMessage += "当前问题：\n" + message;
+appendContextInfo(contextCount);
+}
+}
+const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(fullMessage)}?model=openai-audio&voice=${selectedVoice}`;
+const audio = new Audio(apiUrl);
+audio.oncanplaythrough = function() {
+sendBtn.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24" fill="none">
+<path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+sendBtn.disabled = false;
+const duration = audio.duration;
+const formattedDuration = formatTime(duration);
+const botMessageId = 'bot_' + Date.now();
+appendBotMessage(audio, formattedDuration, "", botMessageId);
+conv.messages.push({
+id: botMessageId,
+role: 'assistant',
+content: "",
+audioUrl: apiUrl,
+duration: duration,
+voice: selectedVoice,
+timestamp: new Date().toISOString()
+});
+saveConversations();
+scrollToBottom();
+};
+audio.onerror = function() {
+sendBtn.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24" fill="none">
+<path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+sendBtn.disabled = false;
+const errorMessageId = 'error_' + Date.now();
+appendErrorMessage(selectedVoice, errorMessageId);
+conv.messages.push({
+id: errorMessageId,
+role: 'error',
+content: `${selectedVoice}正忙，请稍后提问或选择其他聊天助手`,
+timestamp: new Date().toISOString()
+});
+saveConversations();
+scrollToBottom();
+};
+}
+function appendUserMessage(text, messageId = null, appendToConv = true) {
+const messageGroup = document.createElement('div');
+messageGroup.className = 'message-group';
+const messageRow = document.createElement('div');
+messageRow.className = 'message-row user-message';
+if (messageId) {
+messageRow.setAttribute('data-message-id', messageId);
+}
+const messageContainer = document.createElement('div');
+messageContainer.className = 'message-container';
+const avatar = document.createElement('div');
+avatar.className = 'avatar user-avatar';
+avatar.style.backgroundImage = `url(${localStorage.getItem('userAvatar') || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Math.random()})`;
+const messageContent = document.createElement('div');
+messageContent.className = 'message-content user-content';
+messageContent.textContent = text;
+messageContainer.appendChild(avatar);
+messageContainer.appendChild(messageContent);
+messageRow.appendChild(messageContainer);
+messageGroup.appendChild(messageRow);
+chatArea.appendChild(messageGroup);
+}
+function appendContextInfo(contextCount) {
+const contextInfo = document.createElement('div');
+contextInfo.className = 'context-info';
+const infoIcon = document.createElement('div');
+infoIcon.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+const infoText = document.createElement('span');
+infoText.textContent = `正在读取前${contextCount}条上下文消息...`;
+contextInfo.appendChild(infoIcon);
+contextInfo.appendChild(infoText);
+chatArea.appendChild(contextInfo);
+}
+function appendBotMessage(audio, duration, text, messageId = null, appendToConv = true) {
+if (messageId) { audio.dataAudioId = messageId; }
+const messageGroup = document.createElement('div');
+messageGroup.className = 'message-group';
+const messageRow = document.createElement('div');
+messageRow.className = 'message-row bot-message';
+if (messageId) { messageRow.setAttribute('data-message-id', messageId); }
+const messageContainer = document.createElement('div');
+messageContainer.className = 'message-container';
+const avatar = document.createElement('div');
+avatar.className = 'avatar bot-avatar';
+avatar.textContent = 'AI';
+const messageContent = document.createElement('div');
+messageContent.className = 'message-content bot-content';
+if (text && text.trim().length > 0) {
+const textContent = document.createElement('div');
+textContent.textContent = text;
+textContent.style.marginBottom = '15px';
+messageContent.appendChild(textContent);
+}
+const audioContainer = document.createElement('div');
+audioContainer.className = 'audio-container';
+const playButton = document.createElement('div');
+playButton.className = 'play-button';
+playButton.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+const voiceWave = document.createElement('div');
+voiceWave.className = 'voice-wave paused';
+voiceWave.setAttribute('data-audio-id', messageId || Date.now().toString());
+const waveAnimation = document.createElement('div');
+waveAnimation.className = 'wave-animation';
+for (let i = 0; i < 10; i++) {
+const bar = document.createElement('div');
+bar.className = 'bar';
+waveAnimation.appendChild(bar);
+}
+const durationSpan = document.createElement('span');
+durationSpan.className = 'voice-duration';
+durationSpan.textContent = duration;
+// 下载按钮
+const downloadButton = document.createElement('button');
+downloadButton.className = 'download-btn';
+downloadButton.textContent = '下载';
+downloadButton.addEventListener('click', function(e) {
+e.stopPropagation();
+const a = document.createElement('a');
+a.href = audio.src;
+a.download = 'audio_' + Date.now() + '.mp3';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+});
+voiceWave.appendChild(waveAnimation);
+audioContainer.appendChild(playButton);
+audioContainer.appendChild(voiceWave);
+audioContainer.appendChild(durationSpan);
+audioContainer.appendChild(downloadButton);
+messageContent.appendChild(audioContainer);
+messageContainer.appendChild(avatar);
+messageContainer.appendChild(messageContent);
+messageRow.appendChild(messageContainer);
+messageGroup.appendChild(messageRow);
+chatArea.appendChild(messageGroup);
+playButton.addEventListener('click', function() {
+playAudio(audio, voiceWave, playButton);
+});
+voiceWave.addEventListener('click', function() {
+playAudio(audio, voiceWave, playButton);
+});
+}
+function appendErrorMessage(voiceName, messageId = null, appendToConv = true) {
+const messageGroup = document.createElement('div');
+messageGroup.className = 'message-group';
+const messageRow = document.createElement('div');
+messageRow.className = 'message-row bot-message';
+if (messageId) { messageRow.setAttribute('data-message-id', messageId); }
+const messageContainer = document.createElement('div');
+messageContainer.className = 'message-container';
+const avatar = document.createElement('div');
+avatar.className = 'avatar';
+avatar.style.backgroundColor = '#ff4d4f';
+avatar.textContent = '!';
+const messageContent = document.createElement('div');
+messageContent.className = 'message-content bot-content';
+const errorContent = document.createElement('div');
+errorContent.className = 'error-message';
+errorContent.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<span>${voiceName}正忙，请稍后提问或选择其他聊天助手</span>`;
+messageContent.appendChild(errorContent);
+messageContainer.appendChild(avatar);
+messageContainer.appendChild(messageContent);
+messageRow.appendChild(messageContainer);
+messageGroup.appendChild(messageRow);
+chatArea.appendChild(messageGroup);
+}
+function playAudio(audio, waveElement, playButton) {
+if (currentlyPlaying && currentlyPlaying !== audio) {
+currentlyPlaying.pause();
+currentlyPlaying.currentTime = 0;
+document.querySelectorAll('.voice-wave').forEach(wave => {
+if (wave !== waveElement) {
+wave.classList.remove('playing');
+wave.classList.add('paused');
+}
+});
+document.querySelectorAll('.play-button').forEach(btn => {
+if (btn !== playButton) {
+btn.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+}
+});
+}
+if (audio.paused) {
+audio.play();
+waveElement.classList.remove('paused');
+waveElement.classList.add('playing');
+playButton.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M10 4H6V20H10V4Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18 4H14V20H18V4Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+currentlyPlaying = audio;
+audio.onended = function() {
+waveElement.classList.remove('playing');
+waveElement.classList.add('paused');
+playButton.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+currentlyPlaying = null;
+};
+} else {
+audio.pause();
+waveElement.classList.remove('playing');
+waveElement.classList.add('paused');
+playButton.innerHTML = `
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+currentlyPlaying = null;
+}
+}
+function formatTime(seconds) {
+const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+return `${mins}:${secs}`;
+}
+function scrollToBottom() {
+chatArea.scrollTop = chatArea.scrollHeight;
+}
+// 导出聊天记录（仅 HTML 格式）
+function exportChatRecords() {
+const conv = conversations.find(c => c.id === currentConversationId);
+if (!conv || conv.messages.length === 0) {
+alert('当前会话没有聊天记录可导出');
+return;
+}
+let content = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聊天记录</title>
+<style>
+body { font-family: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #f7f7f8; color: #2d333a; }
+.container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.header { text-align: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e5e5e5; }
+.header h1 { color: #10a37f; margin: 0; font-size: 24px; }
+.header p { color: #8e8ea0; margin: 5px 0 0; font-size: 14px; }
+.message-row { padding: 16px; margin-bottom: 10px; }
+.user-message { background-color: #ffffff; }
+.bot-message { background-color: #f7f7f8; }
+.message-container { display: flex; gap: 16px; max-width: 100%; }
+.avatar { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 500; font-size: 14px; flex-shrink: 0; }
+.user-avatar { background-color: #10a37f; }
+.bot-avatar { background-color: #10a37f; }
+.message-content { flex: 1; font-size: 16px; line-height: 1.5; overflow-wrap: break-word; }
+.timestamp { font-size: 12px; color: #8e8ea0; margin-top: 8px; text-align: right; }
+audio { width: 100%; margin-top: 10px; border-radius: 8px; }
+.error-message { color: #ff4d4f; padding: 8px 12px; background-color: rgba(255,77,79,0.1); border-radius: 6px; margin-top: 5px; }
+@media (max-width: 768px) { .container { padding: 15px; } .message-content { font-size: 15px; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>聊天记录</h1>
+<p>导出时间：${new Date().toLocaleString()}</p>
+</div>
+`;
+conv.messages.forEach(entry => {
+const timestamp = new Date(entry.timestamp).toLocaleString();
+if (entry.role === 'user') {
+content += `
+<div class="message-row user-message">
+<div class="message-container">
+<div class="avatar user-avatar">用户</div>
+<div class="message-content">
+<div>${entry.content}</div>
+<div class="timestamp">${timestamp}</div>
+</div>
+</div>
+</div>
+`;
+} else if (entry.role === 'assistant') {
+content += `
+<div class="message-row bot-message">
+<div class="message-container">
+<div class="avatar bot-avatar">AI</div>
+<div class="message-content">
+<div>${entry.content}</div>
+${entry.audioUrl ? `<audio controls src="${entry.audioUrl}"></audio>` : ''}
+<div class="timestamp">${timestamp}</div>
+</div>
+</div>
+</div>
+`;
+} else if (entry.role === 'error') {
+content += `
+<div class="message-row bot-message">
+<div class="message-container">
+<div class="avatar" style="background-color: #ff4d4f;">!</div>
+<div class="message-content">
+<div class="error-message">${entry.content}</div>
+<div class="timestamp">${timestamp}</div>
+</div>
+</div>
+</div>
+`;
+}
+});
+content += `
+</div>
+</body>
+</html>
+`;
+downloadFile(`聊天记录_${new Date().toISOString().slice(0,10)}.html`, content, 'text/html');
+closeExportModal.click();
+}
+function downloadFile(filename, content, type) {
+const blob = new Blob([content], { type: type });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+function clearChatRecords() {
+const conv = conversations.find(c => c.id === currentConversationId);
+if (conv) { conv.messages = []; }
+chatArea.innerHTML = '';
+const now = new Date();
+const hrs = now.getHours().toString().padStart(2, '0');
+const mins = now.getMinutes().toString().padStart(2, '0');
+const timestampDiv = document.createElement('div');
+timestampDiv.className = 'timestamp';
+timestampDiv.innerHTML = `今天 <span id="currentTime">${hrs}:${mins}</span>`;
+chatArea.appendChild(timestampDiv);
+saveConversations();
+closeClearModal.click();
+}
+document.addEventListener('keypress', function(e) {
+if (e.key === 'Enter' && !e.shiftKey) {
+e.preventDefault();
+sendMessage();
+}
+});
+sendBtn.addEventListener('click', sendMessage);
+menuButton.addEventListener('click', function() {
+dropdownMenu.classList.toggle('active');
+});
+document.addEventListener('click', function(e) {
+if (!menuButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+dropdownMenu.classList.remove('active');
+}
+});
+exportChat.addEventListener('click', function() {
+dropdownMenu.classList.remove('active');
+exportModal.style.display = 'flex';
+});
+clearChat.addEventListener('click', function() {
+dropdownMenu.classList.remove('active');
+clearModal.style.display = 'flex';
+});
+settingsItem.addEventListener('click', function() {
+dropdownMenu.classList.remove('active');
+settingsModal.style.display = 'flex';
+});
+closeExportModal.addEventListener('click', function() { exportModal.style.display = 'none'; });
+cancelExport.addEventListener('click', function() { exportModal.style.display = 'none'; });
+confirmExport.addEventListener('click', exportChatRecords);
+closeClearModal.addEventListener('click', function() { clearModal.style.display = 'none'; });
+cancelClear.addEventListener('click', function() { clearModal.style.display = 'none'; });
+confirmClear.addEventListener('click', clearChatRecords);
+closeSettingsModal.addEventListener('click', function() { settingsModal.style.display = 'none'; });
+saveSettings.addEventListener('click', function() {
+// 保存默认语音设置
+defaultVoice = defaultVoiceSelect.value;
+localStorage.setItem(defaultVoiceKey, defaultVoice);
+// 更新输入区域的语音选择器
+voiceSelect.value = defaultVoice;
+settingsModal.style.display = 'none';
+});
+exportModal.addEventListener('click', function(e) {
+if (e.target === exportModal) { exportModal.style.display = 'none'; }
+});
+clearModal.addEventListener('click', function(e) {
+if (e.target === clearModal) { clearModal.style.display = 'none'; }
+});
+settingsModal.addEventListener('click', function(e) {
+if (e.target === settingsModal) { settingsModal.style.display = 'none'; }
+});
+initSpeechRecognition();
+loadConversations();
+});
+</script>
 </body>
 </html>
