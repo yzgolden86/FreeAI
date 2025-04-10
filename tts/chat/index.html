@@ -105,6 +105,14 @@ box-sizing: border-box;
 font-family: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Helvetica Neue", Arial;
 transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
+html {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;  /* IE 和 Edge */
+            scrollbar-width: none;     /* Chrome、Firefox、Opera、Samsung 补丁 */
+        }
+        html::-webkit-scrollbar {
+            display: none;  /* 隐藏Chrome、Safari和Opera中的滚动条 */
+        }
 body {
 background-color: var(--bg-color);
 height: 100vh;
@@ -764,7 +772,7 @@ transition: all 0.2s ease;
 .message-content { font-size: 14px; }
 .timestamp { font-size: 11px; padding: 3px 8px; }
 .settings-row { flex-direction: column; gap: 8px; }
-.voice-selector, .context-selector { width: 100%; }
+.voice-selector, .context-selector { width: 60%; }
 .audio-container { max-width: 100%; }
 }
 </style>
@@ -799,7 +807,10 @@ transition: all 0.2s ease;
 <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </button>
-<h1>Free AI 语音聊天助手</h1>
+<h1>Free AI 语音聊天助手</h1><br>
+<p><font size="1" color="#888888">
+    Tips：请先点击左侧“新对话”按钮，开启对话。
+</font></p>
 </div>
 <div class="header-buttons">
 <button class="theme-toggle" id="themeToggle">
