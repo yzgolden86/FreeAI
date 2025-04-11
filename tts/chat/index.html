@@ -325,6 +325,13 @@
       display: flex;
       gap: 16px;
     }
+    /* 新增头像容器，用于放置 AI 头像及下方语音助手名称标签 */
+    .avatar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
     .avatar {
       width: 36px;
       height: 36px;
@@ -345,6 +352,10 @@
     }
     .bot-avatar {
       background-color: #10a37f;
+    }
+    .assistant-name {
+      font-size: 12px;
+      color: var(--text-secondary);
     }
     .message-content {
       flex: 1;
@@ -463,7 +474,7 @@
       flex-direction: column;
       align-items: center;
     }
-    /* 新增输入框区域布局，左侧放置语音/上下文选择器 */
+    /* 输入区域布局：左侧为语音助手和上下文选择器 */
     .input-container {
       max-width: 800px;
       width: 100%;
@@ -473,27 +484,36 @@
       gap: 10px;
       align-items: flex-start;
     }
-    .input-left {
+    /* 新增选择器包装，用于图标+下拉框布局 */
+    .voice-selector-wrapper, .context-selector-wrapper {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 4px;
     }
-    /* 美化语音切换和上下文选择按钮 */
+    .voice-btn, .context-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .voice-selector, .context-selector {
-      width: 150px;
       border: 1px solid var(--input-border);
       border-radius: 6px;
-      padding: 4px;
       background-color: var(--input-bg);
     }
     .voice-selector select, .context-selector select {
-      width: 100%;
       border: none;
       outline: none;
       background: transparent;
       font-size: 14px;
       color: var(--text-color);
+      padding: 4px;
     }
+    /* 输入框区域 */
     .input-right {
       flex: 1;
       position: relative;
@@ -733,6 +753,8 @@
       .dropdown-menu { width: 180px; }
       .header h1 { font-size: 16px; }
       select { font-size: 13px; padding: 6px 8px; }
+      /* 在小屏幕下调整选择器宽度 */
+      .voice-selector, .context-selector { width: 80px; }
     }
     @media (max-width: 480px) {
       .message-row { padding: 16px 12px; }
@@ -754,16 +776,16 @@
           新对话
         </button>
         <button class="new-chat-btn" id="deleteAllBtn">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" 
-       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-    <polyline points="3 6 5 6 21 6"/>
-    <path d="M19 6l-1 14H6L5 6"/>
-    <path d="M10 11v6"/>
-    <path d="M14 11v6"/>
-    <path d="M9 6V4h6v2"/>
-  </svg>
-  删除所有对话
-</button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/>
+            <path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+          删除所有对话
+        </button>
       </div>
       <div class="sidebar-content" id="sidebarContent">
         <!-- 会话列表在这里动态生成 -->
@@ -833,29 +855,45 @@
           <div class="input-container">
             <div class="input-wrapper">
               <div class="input-left">
-                <div class="voice-selector">
-                  <select id="voiceSelect">
-                    <option value="alloy">Alloy - 平稳中性</option>
-                    <option value="echo">Echo - 深沉有力</option>
-                    <option value="fable">Fable - 温和舒适</option>
-                    <option value="onyx">Onyx - 坚定严肃</option>
-                    <option value="nova">Nova - 热情活力</option>
-                    <option value="shimmer">Shimmer - 清脆明亮</option>
-                    <option value="coral">Coral - 温暖亲切</option>
-                    <option value="verse">Verse - 抒情优雅</option>
-                    <option value="ballad">Ballad - 柔和深情</option>
-                    <option value="ash">Ash - 冷静理智</option>
-                    <option value="sage">Sage - 智慧沉稳</option>
-                    <option value="amuch">Amuch - 亲切友好</option>
-                    <option value="dan">Dan - 自信专业</option>
-                  </select>
+                <div class="voice-selector-wrapper">
+                  <button class="voice-btn" id="voiceBtn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                      <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="none" stroke="currentColor" stroke-width="2"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2"/>
+                      <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  <div class="voice-selector">
+                    <select id="voiceSelect">
+                      <option value="alloy">Alloy - 平稳中性</option>
+                      <option value="echo">Echo - 深沉有力</option>
+                      <option value="fable">Fable - 温和舒适</option>
+                      <option value="onyx">Onyx - 坚定严肃</option>
+                      <option value="nova">Nova - 热情活力</option>
+                      <option value="shimmer">Shimmer - 清脆明亮</option>
+                      <option value="coral">Coral - 温暖亲切</option>
+                      <option value="verse">Verse - 抒情优雅</option>
+                      <option value="ballad">Ballad - 柔和深情</option>
+                      <option value="ash">Ash - 冷静理智</option>
+                      <option value="sage">Sage - 智慧沉稳</option>
+                      <option value="amuch">Amuch - 亲切友好</option>
+                      <option value="dan">Dan - 自信专业</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="context-selector">
-                  <select id="contextSelect">
-                    <option value="0">不读取上下文</option>
-                    <option value="5">读取前5条消息</option>
-                    <option value="10">读取前10条消息</option>
-                  </select>
+                <div class="context-selector-wrapper" style="margin-top:8px;">
+                  <button class="context-btn" id="contextBtn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  </button>
+                  <div class="context-selector">
+                    <select id="contextSelect">
+                      <option value="0">不读取上下文</option>
+                      <option value="5">读取前5条消息</option>
+                      <option value="10">读取前10条消息</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="input-right">
@@ -875,6 +913,7 @@
       </div>
     </div>
   </div>
+
   <!-- 导出对话模态框（仅 HTML 导出） -->
   <div class="overlay" id="exportModal">
     <div class="modal">
@@ -998,16 +1037,13 @@
       const announcementModal = document.getElementById('announcementModal');
       const closeAnnouncementModal = document.getElementById('closeAnnouncementModal');
       const closeAnnouncementConfirm = document.getElementById('closeAnnouncementConfirm');
-      
       // 设置当前时间
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, '0');
       const minutes = now.getMinutes().toString().padStart(2, '0');
       document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-      
       // 取消语音识别功能（删除右侧语音输入按钮相关代码）
       // （目前不调用相关函数）
-      
       // 主题设置
       const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
       const currentTheme = localStorage.getItem('theme');
@@ -1045,12 +1081,10 @@
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
       });
-      
       // 加载默认语音设置
       let defaultVoice = localStorage.getItem(defaultVoiceKey) || voiceSelect.options[0].value;
       voiceSelect.value = defaultVoice;
       defaultVoiceSelect.value = defaultVoice;
-      
       // 会话相关操作
       function saveConversations() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
@@ -1106,7 +1140,7 @@
               if (entry.audioUrl) {
                 const audio = new Audio(entry.audioUrl);
                 const formattedDuration = formatTime(entry.duration);
-                appendBotMessage(audio, formattedDuration, entry.content, entry.id, false);
+                appendBotMessage(audio, formattedDuration, entry.content, entry.id, false, entry.voice);
               }
             } else if (entry.role === 'error') {
               appendErrorMessage(entry.content.split('正忙')[0], entry.id, false);
@@ -1144,7 +1178,6 @@
       } else {
         loadConversations();
       }
-      
       // 删除所有对话
       deleteAllBtn.addEventListener('click', function() {
         if (confirm('确定要删除所有对话吗？')) {
@@ -1155,7 +1188,6 @@
           chatArea.innerHTML = '';
         }
       });
-      
       // 发送消息函数
       function sendMessage() {
         const message = messageInput.value.trim();
@@ -1207,7 +1239,7 @@
           const duration = audio.duration;
           const formattedDuration = formatTime(duration);
           const botMessageId = 'bot_' + Date.now();
-          appendBotMessage(audio, formattedDuration, "", botMessageId);
+          appendBotMessage(audio, formattedDuration, "", botMessageId, false, selectedVoice);
           conv.messages.push({
             id: botMessageId,
             role: 'assistant',
@@ -1276,7 +1308,8 @@
         contextInfo.appendChild(infoText);
         chatArea.appendChild(contextInfo);
       }
-      function appendBotMessage(audio, duration, text, messageId = null, appendToConv = true) {
+      // 修改后的函数，增加 voiceName 参数，并在 AI 消息头像下方显示所用语音助手名称
+      function appendBotMessage(audio, duration, text, messageId = null, appendToConv = true, voiceName = 'AI') {
         if (messageId) { audio.dataAudioId = messageId; }
         const messageGroup = document.createElement('div');
         messageGroup.className = 'message-group';
@@ -1285,9 +1318,17 @@
         if (messageId) { messageRow.setAttribute('data-message-id', messageId); }
         const messageContainer = document.createElement('div');
         messageContainer.className = 'message-container';
+        // 新增头像容器，包含头像和语音助手名称
+        const avatarContainer = document.createElement('div');
+        avatarContainer.className = 'avatar-container';
         const avatar = document.createElement('div');
         avatar.className = 'avatar bot-avatar';
         avatar.textContent = 'AI';
+        const assistantLabel = document.createElement('div');
+        assistantLabel.className = 'assistant-name';
+        assistantLabel.textContent = voiceName;
+        avatarContainer.appendChild(avatar);
+        avatarContainer.appendChild(assistantLabel);
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content bot-content';
         if (text && text.trim().length > 0) {
@@ -1304,7 +1345,6 @@
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M8 5V19L19 12L8 5Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>`;
-        // 为播放按钮添加点击并阻止事件冒泡，避免重复添加新语音条
         playButton.addEventListener('click', function(e) {
           e.stopPropagation();
           playAudio(audio, voiceWave, playButton);
@@ -1336,12 +1376,11 @@
         });
         voiceWave.appendChild(waveAnimation);
         audioContainer.appendChild(playButton);
-        // 去掉对 voiceWave 单独绑定点击事件，避免重复执行
         audioContainer.appendChild(voiceWave);
         audioContainer.appendChild(durationSpan);
         audioContainer.appendChild(downloadButton);
         messageContent.appendChild(audioContainer);
-        messageContainer.appendChild(avatar);
+        messageContainer.appendChild(avatarContainer);
         messageContainer.appendChild(messageContent);
         messageRow.appendChild(messageContainer);
         messageGroup.appendChild(messageRow);
