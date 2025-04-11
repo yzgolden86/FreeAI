@@ -3,6 +3,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free AI 语音聊天助手</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       /* 亮色模式变量 */
@@ -220,9 +221,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 12px;
-      font-weight: 500;
+      /* 使用简单默认SVG头像替换原来的文字 */
+    }
+    .sidebar-user-avatar svg {
+      width: 24px;
+      height: 24px;
+      display: block;
     }
     .sidebar-user-name {
       flex: 1;
@@ -484,11 +488,11 @@
       gap: 10px;
       align-items: flex-start;
     }
-    /* 新增选择器包装，用于图标+下拉框布局 */
-    .voice-selector-wrapper, .context-selector-wrapper {
+    /* 修改后的布局：只显示两个图标按钮，去除内联下拉选择器 */
+    .input-left {
       display: flex;
-      align-items: center;
-      gap: 4px;
+      flex-direction: column;
+      gap: 8px;
     }
     .voice-btn, .context-btn {
       border: none;
@@ -500,20 +504,6 @@
       align-items: center;
       justify-content: center;
     }
-    .voice-selector, .context-selector {
-      border: 1px solid var(--input-border);
-      border-radius: 6px;
-      background-color: var(--input-bg);
-    }
-    .voice-selector select, .context-selector select {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 14px;
-      color: var(--text-color);
-      padding: 4px;
-    }
-    /* 输入框区域 */
     .input-right {
       flex: 1;
       position: relative;
@@ -754,7 +744,6 @@
       .header h1 { font-size: 16px; }
       select { font-size: 13px; padding: 6px 8px; }
       /* 在小屏幕下调整选择器宽度 */
-      .voice-selector, .context-selector { width: 80px; }
     }
     @media (max-width: 480px) {
       .message-row { padding: 16px 12px; }
@@ -792,7 +781,13 @@
       </div>
       <div class="sidebar-footer">
         <div class="sidebar-user" id="userBtn">
-          <div class="sidebar-user-avatar">U</div>
+          <div class="sidebar-user-avatar">
+            <!-- 简单默认SVG头像 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" fill="#10a37f"/>
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-5 0-8 2.5-8 4v2h16v-2c0-1.5-3-4-8-4z" fill="#ffffff"/>
+            </svg>
+          </div>
           <div class="sidebar-user-name">用户</div>
         </div>
       </div>
@@ -855,46 +850,20 @@
           <div class="input-container">
             <div class="input-wrapper">
               <div class="input-left">
-                <div class="voice-selector-wrapper">
-                  <button class="voice-btn" id="voiceBtn">
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                      <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="none" stroke="currentColor" stroke-width="2"/>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2"/>
-                      <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                  </button>
-                  <div class="voice-selector">
-                    <select id="voiceSelect">
-                      <option value="alloy">Alloy - 平稳中性</option>
-                      <option value="echo">Echo - 深沉有力</option>
-                      <option value="fable">Fable - 温和舒适</option>
-                      <option value="onyx">Onyx - 坚定严肃</option>
-                      <option value="nova">Nova - 热情活力</option>
-                      <option value="shimmer">Shimmer - 清脆明亮</option>
-                      <option value="coral">Coral - 温暖亲切</option>
-                      <option value="verse">Verse - 抒情优雅</option>
-                      <option value="ballad">Ballad - 柔和深情</option>
-                      <option value="ash">Ash - 冷静理智</option>
-                      <option value="sage">Sage - 智慧沉稳</option>
-                      <option value="amuch">Amuch - 亲切友好</option>
-                      <option value="dan">Dan - 自信专业</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="context-selector-wrapper" style="margin-top:8px;">
-                  <button class="context-btn" id="contextBtn">
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                  </button>
-                  <div class="context-selector">
-                    <select id="contextSelect">
-                      <option value="0">不读取上下文</option>
-                      <option value="5">读取前5条消息</option>
-                      <option value="10">读取前10条消息</option>
-                    </select>
-                  </div>
-                </div>
+                <!-- 语音按钮：点击后弹出选择语音助手模态框 -->
+                <button class="voice-btn" id="voiceBtn">
+                  <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <!-- 上下文按钮：点击后弹出选择上下文消息条数模态框 -->
+                <button class="context-btn" id="contextBtn">
+                  <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
               </div>
               <div class="input-right">
                 <textarea class="input-field" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
@@ -983,17 +952,82 @@
   <div class="overlay" id="announcementModal">
     <div class="modal">
       <div class="modal-header">
-        <h3 class="modal-title">公告</h3>
+        <h3 class="modal-title">关于</h3>
         <button class="close-btn" id="closeAnnouncementModal">×</button>
       </div>
       <div class="modal-body">
-        <p>这里是公告内容……</p>
+        <p style="font-size: 14px; color: var(--text-color);">
+        <i class="fas fa-info-circle" style="color: var(--neon-blue);"></i> 
+        本项目由 <a href="https://other.azad.asia" target="_blank" style="color: blue; text-decoration: none;">Azad</a> 开发 
+      &nbsp; &nbsp; <i class="fas fa-robot" style="color: var(--neon-blue);"></i>
+        基于 <a href="https://pollinations.ai" target="_blank" style="color:blue; text-decoration: none;">Pollinations.AI</a> 提供服务
+<br><br>
+<i class="fab fa-github" style="color: var(--neon-blue);"></i> 项目开源地址
+        <a href="https://github.com/Azad-sl/FreeAI" target="_blank" style="color: blue; text-decoration: none;">Github</a> &nbsp; &nbsp; 
+<i class="fas fa-medal" style="color: var(--neon-blue);"></i> 给站长
+        <a href="https://home.azad.asia/ds" target="_blank" style="color: blue; text-decoration: none;">加个鸡腿</a> 
+    </p>
       </div>
       <div class="modal-footer">
         <button class="modal-btn btn-primary" id="closeAnnouncementConfirm">我知道了</button>
       </div>
     </div>
   </div>
+
+  <!-- 新增语音选择模态框 -->
+  <div class="overlay" id="voiceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">选择语音助手</h3>
+        <button class="close-btn" id="closeVoiceModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>请选择要使用的语音助手：</p>
+        <select id="modalVoiceSelect">
+          <option value="alloy">Alloy - 平稳中性</option>
+          <option value="echo">Echo - 深沉有力</option>
+          <option value="fable">Fable - 温和舒适</option>
+          <option value="onyx">Onyx - 坚定严肃</option>
+          <option value="nova">Nova - 热情活力</option>
+          <option value="shimmer">Shimmer - 清脆明亮</option>
+          <option value="coral">Coral - 温暖亲切</option>
+          <option value="verse">Verse - 抒情优雅</option>
+          <option value="ballad">Ballad - 柔和深情</option>
+          <option value="ash">Ash - 冷静理智</option>
+          <option value="sage">Sage - 智慧沉稳</option>
+          <option value="amuch">Amuch - 亲切友好</option>
+          <option value="dan">Dan - 自信专业</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn btn-secondary" id="cancelVoiceModal">取消</button>
+        <button class="modal-btn btn-primary" id="confirmVoiceModal">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增上下文选择模态框 -->
+  <div class="overlay" id="contextModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">选择上下文消息条数</h3>
+        <button class="close-btn" id="closeContextModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>请选择读取多少条上下文消息：</p>
+        <select id="modalContextSelect">
+          <option value="0">不读取上下文</option>
+          <option value="5">读取前5条消息</option>
+          <option value="10">读取前10条消息</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn btn-secondary" id="cancelContextModal">取消</button>
+        <button class="modal-btn btn-primary" id="confirmContextModal">确定</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // 全局变量：记录所有会话、当前会话ID、存储 key、默认语音 key
@@ -1001,12 +1035,13 @@
       let currentConversationId = null;
       const STORAGE_KEY = 'voiceConversations';
       const defaultVoiceKey = 'defaultVoice';
+
       // DOM 对象
       const chatArea = document.getElementById('chatArea');
       const messageInput = document.getElementById('messageInput');
       const sendBtn = document.getElementById('sendBtn');
-      const voiceSelect = document.getElementById('voiceSelect');
-      const contextSelect = document.getElementById('contextSelect');
+      const voiceSelect = document.getElementById('defaultVoiceSelect'); // 使用默认设置中的select
+      const contextSelect = document.getElementById('modalContextSelect'); // 从模态框中取值
       const menuButton = document.getElementById('menuButton');
       const dropdownMenu = document.getElementById('dropdownMenu');
       const exportChat = document.getElementById('exportChat');
@@ -1037,13 +1072,25 @@
       const announcementModal = document.getElementById('announcementModal');
       const closeAnnouncementModal = document.getElementById('closeAnnouncementModal');
       const closeAnnouncementConfirm = document.getElementById('closeAnnouncementConfirm');
+
+      // 新增：模态框元素对象
+      const voiceModal = document.getElementById('voiceModal');
+      const closeVoiceModal = document.getElementById('closeVoiceModal');
+      const cancelVoiceModal = document.getElementById('cancelVoiceModal');
+      const confirmVoiceModal = document.getElementById('confirmVoiceModal');
+      const modalVoiceSelect = document.getElementById('modalVoiceSelect');
+      const contextModal = document.getElementById('contextModal');
+      const closeContextModal = document.getElementById('closeContextModal');
+      const cancelContextModal = document.getElementById('cancelContextModal');
+      const confirmContextModal = document.getElementById('confirmContextModal');
+      const modalContextSelect = document.getElementById('modalContextSelect');
+
       // 设置当前时间
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, '0');
       const minutes = now.getMinutes().toString().padStart(2, '0');
       document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-      // 取消语音识别功能（删除右侧语音输入按钮相关代码）
-      // （目前不调用相关函数）
+
       // 主题设置
       const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
       const currentTheme = localStorage.getItem('theme');
@@ -1082,9 +1129,9 @@
         this.style.height = (this.scrollHeight) + 'px';
       });
       // 加载默认语音设置
-      let defaultVoice = localStorage.getItem(defaultVoiceKey) || voiceSelect.options[0].value;
-      voiceSelect.value = defaultVoice;
+      let defaultVoice = localStorage.getItem(defaultVoiceKey) || defaultVoiceSelect.options[0].value;
       defaultVoiceSelect.value = defaultVoice;
+      
       // 会话相关操作
       function saveConversations() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
@@ -1157,7 +1204,7 @@
         };
         conversations.push(newConv);
         currentConversationId = newConv.id;
-        voiceSelect.value = defaultVoice;
+        defaultVoiceSelect.value = defaultVoice;
         updateSidebar();
         chatArea.innerHTML = '';
         const now = new Date();
@@ -1172,13 +1219,11 @@
       newChatBtn.addEventListener('click', function() {
         createNewConversation();
       });
-      // 若没有已存会话，则用户首次进入时自动创建一个新对话
       if (!localStorage.getItem(STORAGE_KEY)) {
         createNewConversation();
       } else {
         loadConversations();
       }
-      // 删除所有对话
       deleteAllBtn.addEventListener('click', function() {
         if (confirm('确定要删除所有对话吗？')) {
           conversations = [];
@@ -1188,7 +1233,6 @@
           chatArea.innerHTML = '';
         }
       });
-      // 发送消息函数
       function sendMessage() {
         const message = messageInput.value.trim();
         if (!message) return;
@@ -1211,8 +1255,8 @@
         scrollToBottom();
         sendBtn.innerHTML = '<div class="loading"></div>';
         sendBtn.disabled = true;
-        const selectedVoice = voiceSelect.value;
-        const contextCount = parseInt(contextSelect.value);
+        const selectedVoice = defaultVoice; 
+        const contextCount = parseInt(modalContextSelect.value);
         let fullMessage = message;
         if (contextCount > 0) {
           const msgs = conv.messages;
@@ -1308,7 +1352,6 @@
         contextInfo.appendChild(infoText);
         chatArea.appendChild(contextInfo);
       }
-      // 修改后的函数，增加 voiceName 参数，并在 AI 消息头像下方显示所用语音助手名称
       function appendBotMessage(audio, duration, text, messageId = null, appendToConv = true, voiceName = 'AI') {
         if (messageId) { audio.dataAudioId = messageId; }
         const messageGroup = document.createElement('div');
@@ -1318,7 +1361,6 @@
         if (messageId) { messageRow.setAttribute('data-message-id', messageId); }
         const messageContainer = document.createElement('div');
         messageContainer.className = 'message-container';
-        // 新增头像容器，包含头像和语音助手名称
         const avatarContainer = document.createElement('div');
         avatarContainer.className = 'avatar-container';
         const avatar = document.createElement('div');
@@ -1473,7 +1515,6 @@
       function scrollToBottom() {
         chatArea.scrollTop = chatArea.scrollHeight;
       }
-      // 导出聊天记录（仅 HTML 格式）
       function exportChatRecords() {
         const conv = conversations.find(c => c.id === currentConversationId);
         if (!conv || conv.messages.length === 0) {
@@ -1625,7 +1666,6 @@
       saveSettings.addEventListener('click', function() {
         defaultVoice = defaultVoiceSelect.value;
         localStorage.setItem(defaultVoiceKey, defaultVoice);
-        voiceSelect.value = defaultVoice;
         settingsModal.style.display = 'none';
       });
       exportModal.addEventListener('click', function(e) {
@@ -1637,7 +1677,6 @@
       settingsModal.addEventListener('click', function(e) {
         if (e.target === settingsModal) { settingsModal.style.display = 'none'; }
       });
-      // 用户按钮点击弹出公告模态框
       userBtn.addEventListener('click', function() {
         announcementModal.style.display = 'flex';
       });
@@ -1646,6 +1685,29 @@
       });
       closeAnnouncementConfirm.addEventListener('click', function() {
         announcementModal.style.display = 'none';
+      });
+      // 新增：语音选择按钮点击事件
+      const voiceBtn = document.getElementById('voiceBtn');
+      voiceBtn.addEventListener('click', function() {
+        voiceModal.style.display = 'flex';
+      });
+      closeVoiceModal.addEventListener('click', function() { voiceModal.style.display = 'none'; });
+      cancelVoiceModal.addEventListener('click', function() { voiceModal.style.display = 'none'; });
+      confirmVoiceModal.addEventListener('click', function() {
+        defaultVoice = modalVoiceSelect.value;
+        localStorage.setItem(defaultVoiceKey, defaultVoice);
+        voiceModal.style.display = 'none';
+      });
+      // 新增：上下文选择按钮点击事件
+      const contextBtn = document.getElementById('contextBtn');
+      contextBtn.addEventListener('click', function() {
+        contextModal.style.display = 'flex';
+      });
+      closeContextModal.addEventListener('click', function() { contextModal.style.display = 'none'; });
+      cancelContextModal.addEventListener('click', function() { contextModal.style.display = 'none'; });
+      confirmContextModal.addEventListener('click', function() {
+        // 直接保存所选值，后续发送消息时会读取此值
+        contextModal.style.display = 'none';
       });
     });
   </script>
