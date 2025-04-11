@@ -879,7 +879,6 @@
       </div>
     </div>
   </div>
-
   <!-- 导出对话模态框 -->
   <div class="overlay" id="exportModal">
     <div class="modal">
@@ -1263,7 +1262,10 @@
         }
         const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(fullMessage)}?model=openai-audio&voice=${selectedVoice}`;
         const audio = new Audio(apiUrl);
+        // 在 oncanplaythrough 回调中添加标记，防止重复生成语音消息
         audio.oncanplaythrough = function() {
+          if (audio._appended) return;
+          audio._appended = true;
           sendBtn.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24" fill="none">
             <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1346,15 +1348,15 @@
         if(messageId && document.querySelector(`[data-message-id="${messageId}"]`)) {
           return;
         }
-        if (messageId) { 
-          audio.dataAudioId = messageId; 
+        if (messageId) {
+          audio.dataAudioId = messageId;
         }
         const messageGroup = document.createElement('div');
         messageGroup.className = 'message-group';
         const messageRow = document.createElement('div');
         messageRow.className = 'message-row bot-message';
-        if (messageId) { 
-          messageRow.setAttribute('data-message-id', messageId); 
+        if (messageId) {
+          messageRow.setAttribute('data-message-id', messageId);
         }
         const messageContainer = document.createElement('div');
         messageContainer.className = 'message-container';
