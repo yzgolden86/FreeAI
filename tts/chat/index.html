@@ -3,7 +3,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free AI 语音聊天助手</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       /* 亮色模式变量 */
@@ -221,7 +221,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* 使用简单默认SVG头像替换原来的文字 */
     }
     .sidebar-user-avatar svg {
       width: 24px;
@@ -532,7 +531,7 @@
     .input-buttons {
       position: absolute;
       right: 8px;
-      top: 50%;
+      top: 40%;
       transform: translateY(-50%);
       display: flex;
       gap: 8px;
@@ -743,7 +742,6 @@
       .dropdown-menu { width: 180px; }
       .header h1 { font-size: 16px; }
       select { font-size: 13px; padding: 6px 8px; }
-      /* 在小屏幕下调整选择器宽度 */
     }
     @media (max-width: 480px) {
       .message-row { padding: 16px 12px; }
@@ -820,7 +818,6 @@
             </svg>
           </button>
           <div class="dropdown-menu" id="dropdownMenu">
-            <!-- 导出功能仅保留 HTML 导出 -->
             <div class="dropdown-item" id="exportChat">
               <svg class="dropdown-icon" viewBox="0 0 24 24">
                 <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
@@ -850,7 +847,6 @@
           <div class="input-container">
             <div class="input-wrapper">
               <div class="input-left">
-                <!-- 语音按钮：点击后弹出选择语音助手模态框 -->
                 <button class="voice-btn" id="voiceBtn">
                   <svg viewBox="0 0 24 24" width="24" height="24">
                     <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -858,7 +854,6 @@
                     <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </button>
-                <!-- 上下文按钮：点击后弹出选择上下文消息条数模态框 -->
                 <button class="context-btn" id="contextBtn">
                   <svg viewBox="0 0 24 24" width="24" height="24">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -874,7 +869,9 @@
                       <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </button>
-                </div>
+                </div><center><p><font size="1" color="#888888">
+    Tips：请先点击左侧“新对话”按钮，开启对话。
+</font></p></center>
               </div>
             </div>
           </div>
@@ -883,7 +880,7 @@
     </div>
   </div>
 
-  <!-- 导出对话模态框（仅 HTML 导出） -->
+  <!-- 导出对话模态框 -->
   <div class="overlay" id="exportModal">
     <div class="modal">
       <div class="modal-header">
@@ -957,15 +954,15 @@
       </div>
       <div class="modal-body">
         <p style="font-size: 14px; color: var(--text-color);">
-        <i class="fas fa-info-circle" style="color: var(--neon-blue);"></i> 
-        本项目由 <a href="https://other.azad.asia" target="_blank" style="color: blue; text-decoration: none;">Azad</a> 开发 
+        <i class="fas fa-info-circle" style="color: var(--neon-blue);"></i>
+        本项目由 <a href="https://other.azad.asia" target="_blank" style="color: blue; text-decoration: none;">Azad</a> 开发
       &nbsp; &nbsp; <i class="fas fa-robot" style="color: var(--neon-blue);"></i>
         基于 <a href="https://pollinations.ai" target="_blank" style="color:blue; text-decoration: none;">Pollinations.AI</a> 提供服务
 <br><br>
 <i class="fab fa-github" style="color: var(--neon-blue);"></i> 项目开源地址
-        <a href="https://github.com/Azad-sl/FreeAI" target="_blank" style="color: blue; text-decoration: none;">Github</a> &nbsp; &nbsp; 
+        <a href="https://github.com/Azad-sl/FreeAI" target="_blank" style="color: blue; text-decoration: none;">Github</a> &nbsp; &nbsp;
 <i class="fas fa-medal" style="color: var(--neon-blue);"></i> 给站长
-        <a href="https://home.azad.asia/ds" target="_blank" style="color: blue; text-decoration: none;">加个鸡腿</a> 
+        <a href="https://home.azad.asia/ds" target="_blank" style="color: blue; text-decoration: none;">加个鸡腿</a>
     </p>
       </div>
       <div class="modal-footer">
@@ -973,7 +970,6 @@
       </div>
     </div>
   </div>
-
   <!-- 新增语音选择模态框 -->
   <div class="overlay" id="voiceModal">
     <div class="modal">
@@ -1005,7 +1001,6 @@
       </div>
     </div>
   </div>
-
   <!-- 新增上下文选择模态框 -->
   <div class="overlay" id="contextModal">
     <div class="modal">
@@ -1027,7 +1022,6 @@
       </div>
     </div>
   </div>
-
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // 全局变量：记录所有会话、当前会话ID、存储 key、默认语音 key
@@ -1035,7 +1029,6 @@
       let currentConversationId = null;
       const STORAGE_KEY = 'voiceConversations';
       const defaultVoiceKey = 'defaultVoice';
-
       // DOM 对象
       const chatArea = document.getElementById('chatArea');
       const messageInput = document.getElementById('messageInput');
@@ -1072,7 +1065,6 @@
       const announcementModal = document.getElementById('announcementModal');
       const closeAnnouncementModal = document.getElementById('closeAnnouncementModal');
       const closeAnnouncementConfirm = document.getElementById('closeAnnouncementConfirm');
-
       // 新增：模态框元素对象
       const voiceModal = document.getElementById('voiceModal');
       const closeVoiceModal = document.getElementById('closeVoiceModal');
@@ -1084,13 +1076,11 @@
       const cancelContextModal = document.getElementById('cancelContextModal');
       const confirmContextModal = document.getElementById('confirmContextModal');
       const modalContextSelect = document.getElementById('modalContextSelect');
-
       // 设置当前时间
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, '0');
       const minutes = now.getMinutes().toString().padStart(2, '0');
       document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-
       // 主题设置
       const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
       const currentTheme = localStorage.getItem('theme');
@@ -1131,7 +1121,6 @@
       // 加载默认语音设置
       let defaultVoice = localStorage.getItem(defaultVoiceKey) || defaultVoiceSelect.options[0].value;
       defaultVoiceSelect.value = defaultVoice;
-      
       // 会话相关操作
       function saveConversations() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
@@ -1187,7 +1176,7 @@
               if (entry.audioUrl) {
                 const audio = new Audio(entry.audioUrl);
                 const formattedDuration = formatTime(entry.duration);
-                appendBotMessage(audio, formattedDuration, entry.content, entry.id, false, entry.voice);
+                appendBotMessage(audio, formattedDuration, "", entry.id, false, entry.voice);
               }
             } else if (entry.role === 'error') {
               appendErrorMessage(entry.content.split('正忙')[0], entry.id, false);
@@ -1255,7 +1244,7 @@
         scrollToBottom();
         sendBtn.innerHTML = '<div class="loading"></div>';
         sendBtn.disabled = true;
-        const selectedVoice = defaultVoice; 
+        const selectedVoice = defaultVoice;
         const contextCount = parseInt(modalContextSelect.value);
         let fullMessage = message;
         if (contextCount > 0) {
@@ -1352,13 +1341,21 @@
         contextInfo.appendChild(infoText);
         chatArea.appendChild(contextInfo);
       }
+      // 修改后的 appendBotMessage 函数：添加前先检测是否已存在相同消息
       function appendBotMessage(audio, duration, text, messageId = null, appendToConv = true, voiceName = 'AI') {
-        if (messageId) { audio.dataAudioId = messageId; }
+        if(messageId && document.querySelector(`[data-message-id="${messageId}"]`)) {
+          return;
+        }
+        if (messageId) { 
+          audio.dataAudioId = messageId; 
+        }
         const messageGroup = document.createElement('div');
         messageGroup.className = 'message-group';
         const messageRow = document.createElement('div');
         messageRow.className = 'message-row bot-message';
-        if (messageId) { messageRow.setAttribute('data-message-id', messageId); }
+        if (messageId) { 
+          messageRow.setAttribute('data-message-id', messageId); 
+        }
         const messageContainer = document.createElement('div');
         messageContainer.className = 'message-container';
         const avatarContainer = document.createElement('div');
@@ -1401,6 +1398,7 @@
           bar.className = 'bar';
           waveAnimation.appendChild(bar);
         }
+        voiceWave.appendChild(waveAnimation);
         const durationSpan = document.createElement('span');
         durationSpan.className = 'voice-duration';
         durationSpan.textContent = duration;
@@ -1416,7 +1414,6 @@
           a.click();
           document.body.removeChild(a);
         });
-        voiceWave.appendChild(waveAnimation);
         audioContainer.appendChild(playButton);
         audioContainer.appendChild(voiceWave);
         audioContainer.appendChild(durationSpan);
@@ -1686,7 +1683,6 @@
       closeAnnouncementConfirm.addEventListener('click', function() {
         announcementModal.style.display = 'none';
       });
-      // 新增：语音选择按钮点击事件
       const voiceBtn = document.getElementById('voiceBtn');
       voiceBtn.addEventListener('click', function() {
         voiceModal.style.display = 'flex';
@@ -1698,7 +1694,6 @@
         localStorage.setItem(defaultVoiceKey, defaultVoice);
         voiceModal.style.display = 'none';
       });
-      // 新增：上下文选择按钮点击事件
       const contextBtn = document.getElementById('contextBtn');
       contextBtn.addEventListener('click', function() {
         contextModal.style.display = 'flex';
@@ -1706,7 +1701,6 @@
       closeContextModal.addEventListener('click', function() { contextModal.style.display = 'none'; });
       cancelContextModal.addEventListener('click', function() { contextModal.style.display = 'none'; });
       confirmContextModal.addEventListener('click', function() {
-        // 直接保存所选值，后续发送消息时会读取此值
         contextModal.style.display = 'none';
       });
     });
