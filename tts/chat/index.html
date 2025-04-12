@@ -313,8 +313,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 8px;
       transition: all 0.2s ease;
     }
@@ -432,9 +432,9 @@
     .audio-container {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 1px;
       margin-top: 18px;
-      max-width: 400px;
+      max-width: 450px;
       background-color: var(--wave-bg);
       border-radius: 24px;
       padding: 6px;
@@ -450,7 +450,7 @@
     }
     .voice-wave {
       flex: 1;
-      height: 44px;
+      height: 38px;
       border-radius: 20px;
       position: relative;
       overflow: hidden;
@@ -458,7 +458,7 @@
       transition: background-color 0.2s ease;
       display: flex;
       align-items: center;
-      padding: 0 15px;
+      padding: 0 20px;
     }
     .voice-wave:hover {
       background-color: rgba(58, 123, 213, 0.1);
@@ -493,16 +493,16 @@
     .bar:nth-child(9) { animation-duration: 487ms; }
     .bar:nth-child(10) { animation-duration: 442ms; }
     .voice-duration {
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text-secondary);
-      min-width: 40px;
+      min-width: 30px;
       text-align: right;
       padding-right: 10px;
       font-weight: 500;
     }
     .play-button {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: var(--accent-gradient);
       display: flex;
@@ -528,7 +528,7 @@
       color: var(--btn-secondary-color);
       border: none;
       border-radius: 8px;
-      padding: 6px 10px;
+      padding: 6px 5px;
       cursor: pointer;
       font-size: 12px;
       font-weight: 500;
@@ -546,7 +546,7 @@
       color: var(--btn-secondary-color);
       border: none;
       border-radius: 8px;
-      padding: 6px 10px;
+      padding: 6px 5px;
       cursor: pointer;
       font-size: 12px;
       font-weight: 500;
@@ -952,16 +952,16 @@
       .modal { width: 95%; padding: 22px; }
       .dropdown-menu { width: 200px; }
       .header { padding: 14px 18px; height: 65px; }
-      .header-title { font-size: 15px; }
+      .header-title { font-size: 14px; }
       select { font-size: 14px; padding: 8px 10px; }
-      .voice-btn, .context-btn { width: 30px; height: 30px; }
+      .voice-btn, .context-btn { width: 28px; height: 28px; }
     }
     @media (max-width: 480px) {
       .message-row { padding: 18px 14px; }
       .message-container { gap: 12px; }
       .avatar { width: 32px; height: 32px; }
       .message-content { font-size: 14px; }
-      .timestamp { font-size: 11px; padding: 3px 10px; }
+      .timestamp { font-size: 10px; padding: 3px 10px; }
       .audio-container { max-width: 100%; }
     }
   </style>
@@ -1013,7 +1013,7 @@
               <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <h2>Free AI 语音聊天助手</h2>
+          <h3>Free AI 语音聊天助手</h3>
         </div>
         <div class="header-buttons">
           <button class="theme-toggle" id="themeToggle">
